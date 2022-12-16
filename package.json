@@ -1,0 +1,11 @@
+{
+  "name": "postwall-app",
+  "version": "0.0.1",
+  "description": "Prototype for the social media aspect",
+  "main": "./Backend/app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Benbellah Owino",
+  "license": "ISC"
+}

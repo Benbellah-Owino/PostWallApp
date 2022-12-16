@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    background-color: #0E0E0E;
+    caret-color: rgb(251, 151, 36);
+    color: rgb(251, 151, 36);
+}
