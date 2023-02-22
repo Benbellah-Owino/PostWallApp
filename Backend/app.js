@@ -20,10 +20,10 @@ const authRoutes = require("./routes/authRoutes")
 const postRoutes = require("./routes/postRoutes")
 
 
-
+app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
-app.use(cookieParser())
+
 app.use(cors({ credentials: true, origin: true }))
 
 app.use(function (req, res, next) {

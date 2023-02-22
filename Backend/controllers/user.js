@@ -1,12 +1,10 @@
 const User = require("../models/UserModel")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
-const { createAccessToken, createRefreshToken, sendAccessToken, sendRefreshToken } = require("../token")
-const { application } = require("express")
+const { signToken, sendToken } = require("../token")
 const isAuth = require("../middleware/isAuth")
 const { unblock } = require("../middleware/automatedFunctions")
 const timestamp = require("../middleware/getTime");
-const session = require("express-session");
 
 
 
@@ -30,10 +28,10 @@ const createUser = (async (req, res) => {
 
 
     try {
-        const accessToken = createAccessToken(userOBJ.id, userOBJ.name, userOBJ.admin, userOBJ.blocked);
-        const refreshToken = createRefreshToken(userOBJ._id, userOBJ.name);
-        userOBJ.refreshToken = refreshToken
+        userOBJ.refreshToken = "";
         const newUser = await User.create(userOBJ)
+        const token = signToken(newUser._id, newUser.name)
+        sendToken(res, token);
         var date = new Date();
         var current_date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
         console.log(`User object ${newUser} created at ${current_date}`)
@@ -46,52 +44,56 @@ const createUser = (async (req, res) => {
 })
 
 const loginUser = (async (req, res) => {
-    res.clearCookie("refreshtoken")
+    res.clearCookie("authtoken")
     const { name, password } = req.body
 
     if (!password || !name) {
         res.status(400).send("Please fill all the fields in the login form");
     }
-
-    let user = await User.findOne({ name: name })
-
-
-    const isMatch = await bcrypt.compare(password, user.password)
-
-    if (!isMatch) {
-        res.status(200).send("Invalid credentials")
-    }
-    else {
-        const access_Token = createAccessToken(user._id, user.name, user.admin, user.blocked);
-
-        const refresh_Token = createRefreshToken(user._id, user.name);
-
-        userCreds = user
+    try {
+        let user = await User.findOne({ name: name })
 
 
-        sendRefreshToken(res, refresh_Token)
-        sendAccessToken(req, res, access_Token)
+        const isMatch = await bcrypt.compare(password, user.password)
 
-
-        user = await User.findByIdAndUpdate({ _id: user._id, refreshToken: refresh_Token })
-
-        let current_date = timestamp()
-
-        if (req.session.loginCount) {
-            req.session.loginCount = req.session.loginCount + 1;
+        if (!isMatch) {
+            res.status(200).send("Invalid credentials")
         }
         else {
-            req.session.loginCount = 1
-        }
-        console.log(req.session.loginCount)
 
-        console.log(`Username${user.name} id${user._id} has logged in at ${current_date}`)
+            userCreds = user
+
+
+            const token = signToken(user._id, user.name)
+            sendToken(res, token);
+
+
+            user = await User.findByIdAndUpdate({ _id: user._id, refreshToken: token })
+
+            let current_date = timestamp()
+
+            if (req.session.loginCount) {
+                req.session.loginCount = req.session.loginCount + 1;
+            }
+            else {
+                req.session.loginCount = 1
+            }
+            console.log(req.session.loginCount)
+
+            console.log(`Username${user.name} id${user._id} has logged in at ${current_date}`)
+            res.status(200).json({ msg: "Succesfull Login" });
+        }
+
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ msg: "Error occured" });
     }
-})
+}
+)
 
 const refresh = (req, res) => {
     if (req.cookies.refreshtoken) {
-        const refreshToken = req.cookies.refreshtoken;
+        const refreshToken = req.cookies.authtoken;
 
         jwt.verify(refreshToken, process.env.REFRESH_SECRET,
             (err, decoded) => {
@@ -113,8 +115,22 @@ const getUserDetails = (req, res) => {
     const auth = req.cookies;
     if (!auth) throw new Error("You need to login")
     else {
+        res.status(200).json({ details: `${auth.authtoken}` })
+    }
+}
 
-        res.status(200).json({ details: `${auth.refreshtoken}` })
+const getUser = async (req, res) => {
+    const { id } = req.query
+    console.log(id)
+    try {
+        console.log("called")
+        const projection = { name: 1 }
+        const user = await User.findById({ _id: id }, projection)
+        console.log(user);
+        res.status(200).json({ msg: user, status: "pass" })
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ msg: "Encounterd an error", status: "fail" })
     }
 }
 
@@ -128,7 +144,7 @@ const logout = async (req, res) => {
             console.log("Server error! There is no userId");
         }
         let user = await User.findByIdAndUpdate({ _id: userId, refreshToken: "" })
-        res.clearCookie("refreshtoken", { path: "/refresh" })
+        res.clearCookie("authtoken", { domain: "localhost", path: "/" })
 
         let current_date = timestamp()
 
@@ -332,5 +348,6 @@ module.exports = {
     changePassword,
     getUsers,
     getFollowers,
-    getUserDetails
+    getUserDetails,
+    getUser
 }

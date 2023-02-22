@@ -11,25 +11,31 @@ const UserModel = require("../models/UserModel")
 
 
 const post = async (req, res) => {
+    try {
+        const auth = await isAuth(req, res);
+        const user = auth.userId
 
-    const userId = isAuth(req);
+        if (!auth) {
+            res.status(400).json({ "msg": "Please login" })
+        }
 
-    // const { message, tagged } = req.body;
+        const { message, tagged } = req.body;
 
-    // const postObject = {
-    //     message,
-    //     createdBy: userId,
-    //     tagged
-    // }
+        const postObject = {
+            message,
+            postedBy: user,
+            tagged: tagged || ""
+        }
 
-    // try {
-    //     const post = await Post.create(postObject)
-    // } catch (error) {
-    //     console.log(error)
-    // }
+        console.log(postObject)
 
-
-    res.json({ msg: "Post created succefully" })
+        const post = await Post.create(postObject)
+        console.log(post)
+        res.status(200).json({ msg: "Post created succefully" })
+    } catch (error) {
+        console.log(error)
+        res.status(400).json({ msg: "Post not created" })
+    }
 }
 
 
@@ -100,7 +106,8 @@ const getAllPosts = async (req, res) => {
     try {
         const userId = isAuth(req);
 
-        const blocked = await UserModel.findById({ userId }, { blockedUsers })
+        const blocked = await UserModel.findById({ userId }).blockedUsers
+
 
         const posts = await Post.find().limit(20)
         let finalPosts = [];
@@ -109,11 +116,13 @@ const getAllPosts = async (req, res) => {
             posts.forEach(post => {
                 let id = post._id
                 let flagged = false
-                blocked.forEach(block => {
-                    if (block == id) {
-                        flagged = true
-                    }
-                });
+                if (blocked) {
+                    blocked.forEach(block => {
+                        if (block == id) {
+                            flagged = true
+                        }
+                    });
+                }
                 if (flagged === false) {
                     finalPosts.push(post)
                 }

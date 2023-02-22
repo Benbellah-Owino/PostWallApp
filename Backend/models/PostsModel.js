@@ -17,7 +17,10 @@ const PostsSchema = new mongoose.Schema({
     },
     likes: [String],
     comments: [String],
-    tagged: [String],
+    tagged: {
+        type: String,
+        default: ""
+    },
     originalPost: String
 }, { timestamps: true })
 
