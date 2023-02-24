@@ -17,7 +17,6 @@
 				try {
 					if (data.status == 'pass') {
 						user = data.msg;
-						console.log(user.name);
 					} else {
 						console.log(data.msg);
 					}

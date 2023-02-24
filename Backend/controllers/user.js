@@ -57,7 +57,7 @@ const loginUser = (async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password)
 
         if (!isMatch) {
-            res.status(200).send("Invalid credentials")
+            res.status(200).json({ msg: "Invalid credentials" })
         }
         else {
 
@@ -121,12 +121,12 @@ const getUserDetails = (req, res) => {
 
 const getUser = async (req, res) => {
     const { id } = req.query
-    console.log(id)
+    console.log("getUser 124" + id)
     try {
-        console.log("called")
+
         const projection = { name: 1 }
         const user = await User.findById({ _id: id }, projection)
-        console.log(user);
+        console.log("getUser 129" + user);
         res.status(200).json({ msg: user, status: "pass" })
     } catch (error) {
         console.log(error)

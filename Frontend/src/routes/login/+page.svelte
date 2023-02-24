@@ -28,10 +28,9 @@
 				.then((data) => {
 					console.log(data.msg);
 					window.open('/posts');
-					window.close();
 				});
 		} catch (error) {
-			console.error(error);
+			console.error(error.msg);
 		}
 	}
 </script>

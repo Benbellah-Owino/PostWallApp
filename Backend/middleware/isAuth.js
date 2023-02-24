@@ -34,7 +34,7 @@ const isAuth = async (req, res) => {
         }
         else {
             const verify = jwt.verify(authtoken, process.env.REFRESH_SECRET);
-            // console.log(verify)
+            //console.log(verify)
             return verify
         }
     } catch (error) {

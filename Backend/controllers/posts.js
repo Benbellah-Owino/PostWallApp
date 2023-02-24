@@ -27,10 +27,10 @@ const post = async (req, res) => {
             tagged: tagged || ""
         }
 
-        console.log(postObject)
+
 
         const post = await Post.create(postObject)
-        console.log(post)
+
         res.status(200).json({ msg: "Post created succefully" })
     } catch (error) {
         console.log(error)
@@ -104,7 +104,7 @@ const deletePost = async (req, res) => {
 //Getting the posts
 const getAllPosts = async (req, res) => {
     try {
-        const userId = isAuth(req);
+        const { userId } = await isAuth(req);
 
         const blocked = await UserModel.findById({ userId }).blockedUsers
 
@@ -164,9 +164,14 @@ const getSingleUserPost = async (req, res) => {
 
 const getMyPosts = async (req, res) => {
     try {
-        const userId = isAuth(req);
+        const { userId } = await isAuth(req);
+        console.log(userId)
+        // let mongoUser = `ObjectId('${userId}')`
+        // console.log(mongoUser)
 
         const posts = await Post.find({ postedBy: userId });
+
+        console.log(posts)
 
         res.status(200).json({ posts });
     } catch (error) {
