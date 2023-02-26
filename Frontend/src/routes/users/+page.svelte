@@ -6,7 +6,6 @@
 	import { onMount } from 'svelte';
 
 	onMount(async () => {
-		console.log('Fire');
 		await fetch('http://localhost:3000/api/v1/auth/getusers', {
 			credentials: 'include',
 			withCredentials: true,
@@ -16,8 +15,7 @@
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				allUsers.set(data.users);
-				console.log($allUsers);
+				allUsers.set(data.final);
 			});
 	});
 </script>

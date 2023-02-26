@@ -121,12 +121,11 @@ const getUserDetails = (req, res) => {
 
 const getUser = async (req, res) => {
     const { id } = req.query
-    console.log("getUser 124" + id)
+
     try {
 
         const projection = { name: 1 }
         const user = await User.findById({ _id: id }, projection)
-        console.log("getUser 129" + user);
         res.status(200).json({ msg: user, status: "pass" })
     } catch (error) {
         console.log(error)
@@ -266,15 +265,16 @@ const verifyAccount = async (req, res) => {
 
 const followUser = async (req, res) => {
     try {
-        let userId = isAuth(req);
+        let { userId } = await isAuth(req);
 
-        let followId = req.id;
+        let followId = req.body.id;
+
 
         let user = await User.findByIdAndUpdate({ _id: userId }, { $push: { following: followId } });
 
         let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $push: { followers: userId } });
 
-        res.send(`You have followed ${followedUser.name}`)
+        res.json({ msg: `You have followed ${followedUser.name}` })
     } catch (error) {
         console.log(error)
     };
@@ -299,9 +299,49 @@ const blockUser = async (req, res) => {
 
 //Getting all users
 const getUsers = async (req, res) => {
+
+    const { userId } = await isAuth(req)
     const users = await User.find()
 
-    res.status(200).json({ users })
+    const followed = await User.find({ "_id": userId }, { following: 1 });
+
+    const following = followed[0].following
+    //const f= followed
+
+    let final = []
+
+    users.forEach((user) => {
+        if (!following.includes(user._id)) {
+            final.push(user)
+        }
+    })
+
+    //console.log("User.js 318" + final)
+
+    res.status(200).json({ final })
+}
+const getFollowing = async (req, res) => {
+    console.log("User.js 325 fire")
+
+    const { userId } = await isAuth(req)
+    const users = await User.find()
+
+    const followed = await User.find({ "_id": userId }, { following: 1 });
+
+    const following = followed[0].following
+    //const f= followed
+
+    let final = []
+
+    users.forEach((user) => {
+        if (following.includes(user._id)) {
+            final.push(user)
+        }
+    })
+
+    //console.log("User.js 318" + final)
+
+    res.status(200).json({ final })
 }
 
 const getFollowers = async (req, res) => {
@@ -349,5 +389,6 @@ module.exports = {
     getUsers,
     getFollowers,
     getUserDetails,
-    getUser
+    getUser,
+    getFollowing
 }

@@ -4,7 +4,6 @@
 	import { myPosts } from '../stores/posts';
 
 	onMount(async () => {
-		console.log('Fire');
 		await fetch('http://localhost:3000/api/v1/post/getmyposts', {
 			credentials: 'include',
 			withCredentials: true,
@@ -14,9 +13,7 @@
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data);
 				myPosts.set(data.posts);
-				console.log($myPosts);
 			});
 	});
 </script>

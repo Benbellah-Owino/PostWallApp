@@ -165,13 +165,13 @@ const getSingleUserPost = async (req, res) => {
 const getMyPosts = async (req, res) => {
     try {
         const { userId } = await isAuth(req);
-        console.log(userId)
+
         // let mongoUser = `ObjectId('${userId}')`
         // console.log(mongoUser)
 
         const posts = await Post.find({ postedBy: userId });
 
-        console.log(posts)
+
 
         res.status(200).json({ posts });
     } catch (error) {

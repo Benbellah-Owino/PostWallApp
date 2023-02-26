@@ -1,7 +1,28 @@
 <script>
 	export let user;
-	function follow() {
-		alert('You have followed this user');
+	async function follow() {
+		let body = {
+			id: user._id
+		};
+
+		try {
+			await fetch(`http://localhost:3000/api/v1/auth/followUser`, {
+				method: 'POST',
+				credentials: 'include',
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(body)
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					console.log(data.msg);
+					alert('You have followed this user');
+				});
+		} catch (error) {
+			console.error(error.msg);
+		}
 	}
 </script>
 
@@ -32,5 +53,15 @@
 	.username,
 	.user_tile {
 		cursor: pointer;
+	}
+
+	#follow_user {
+		position: absolute;
+		right: 20px;
+	}
+
+	.username {
+		position: absolute;
+		left: 100px;
 	}
 </style>
