@@ -270,6 +270,22 @@ const followUser = async (req, res) => {
         let followId = req.body.id;
 
 
+        let user = await User.findByIdAndUpdate({ _id: userId }, { $pull: { following: followId } });
+
+        let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $pull: { followers: userId } });
+
+        res.json({ msg: `You have followed ${followedUser.name}` })
+    } catch (error) {
+        console.log(error)
+    };
+}
+const unfollowUser = async (req, res) => {
+    try {
+        let { userId } = await isAuth(req);
+
+        let followId = req.body.id;
+
+
         let user = await User.findByIdAndUpdate({ _id: userId }, { $push: { following: followId } });
 
         let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $push: { followers: userId } });
@@ -321,7 +337,7 @@ const getUsers = async (req, res) => {
     res.status(200).json({ final })
 }
 const getFollowing = async (req, res) => {
-    console.log("User.js 325 fire")
+
 
     const { userId } = await isAuth(req)
     const users = await User.find()
@@ -338,6 +354,7 @@ const getFollowing = async (req, res) => {
             final.push(user)
         }
     })
+    console.log(final)
 
     //console.log("User.js 318" + final)
 
@@ -346,7 +363,7 @@ const getFollowing = async (req, res) => {
 
 const getFollowers = async (req, res) => {
     try {
-        const userID = isAuth(req);
+        const { userID } = await isAuth(req);
 
         let followers
         let followerArray = []

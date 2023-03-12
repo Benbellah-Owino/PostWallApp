@@ -1,7 +1,7 @@
 //Defining this piece of code as an express app
 const express = require("express")
 const app = express()
-
+const path = require("path")
 //Getting all my value from my .env file
 require("dotenv").config()
 const port = process.env.PORT
@@ -13,6 +13,20 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo")
 const cors = require("cors")
 const cookieParser = require("cookie-parser")
+
+//multer setup
+const multer = require("multer");
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads")
+    },
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+})
+
+const upload = multer({ storage })
 
 //Connecting all the required files to the app
 const connectDB = require("./config/connectDb")
@@ -55,6 +69,11 @@ app.use("/api/v1/post", postRoutes)
 app.get("/", (req, res) => {
     res.cookie("ben", "lmao")
     res.send(`<h1>Hello there user</h1>`)
+})
+
+app.post("/api/v1/addMedia", upload.single("media"), (req, res) => {
+    console.log("sent")
+    res.status(200).json({ msg: "Media Added Succesfully" })
 })
 app.get("/getCookie", (req, res) => {
     console.log(req.cookies)

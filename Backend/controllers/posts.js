@@ -1,13 +1,8 @@
 const Post = require("../models/PostsModel")
-const jwt = require("jsonwebtoken")
-const bcrypt = require("bcrypt")
-const { createAccessToken, createRefreshToken, sendAccessToken, sendRefreshToken } = require("../token")
-const { application } = require("express")
 const isAuth = require("../middleware/isAuth")
-const { unblock } = require("../middleware/automatedFunctions")
-const timestamp = require("../middleware/getTime");
 const UserModel = require("../models/UserModel")
 
+const Media = require("../models/mediaModel")
 
 
 const post = async (req, res) => {
@@ -31,7 +26,7 @@ const post = async (req, res) => {
 
         const post = await Post.create(postObject)
 
-        res.status(200).json({ msg: "Post created succefully" })
+        res.status(200).json({ msg: "Post created succefully", postId: post._id })
     } catch (error) {
         console.log(error)
         res.status(400).json({ msg: "Post not created" })

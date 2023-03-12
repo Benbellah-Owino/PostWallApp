@@ -15,7 +15,7 @@
 			.then((response) => response.json())
 			.then((data) => {
 				myFollowers.set(data.final);
-				console.log(myFollowers);
+				console.log($myFollowers);
 			});
 	});
 </script>
@@ -24,9 +24,9 @@
 	class="users_container post_wall absolute bg-amber-900 flex flex-col items-center m-0 p-0 w-10/12 top-20 left-16"
 >
 	<h1 class="-top-24 left-10">Hello</h1>
-	<!-- {#each myFollowers as user (user._id)}
+	{#each $myFollowers as user (user._id)}
 		<User {user} />
-	{/each} -->
+	{/each}
 </div>
 
 <style>
