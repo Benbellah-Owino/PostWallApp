@@ -17,7 +17,6 @@
 			.then((response) => response.json())
 			.then((data) => {
 				posts.set(data.finalPosts);
-				console.log($posts);
 			});
 	});
 </script>

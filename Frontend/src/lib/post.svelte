@@ -1,11 +1,16 @@
 <script>
 	import { onMount } from 'svelte';
 	export let post;
+	let postObj = post;
 	let user = { name: '' };
 	$: name = user.name;
 
-	function onLoad() {
-		fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${post.postedBy}`, {
+	let frame;
+
+	onMount(() => {
+		frame = document.getElementById('frame');
+
+		fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${postObj.postedBy}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -24,9 +29,74 @@
 					console.log(error);
 				}
 			});
+
+		fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${postObj._id}`, {
+			credentials: 'include',
+			withCredentials: true
+		})
+			.then((response) => response.blob())
+			.then((data) => {
+				if (data.type == 'application/json') {
+					console.log('Text');
+				} else {
+					console.log(data);
+					console.log(postObj.message);
+					const url = URL.createObjectURL(data);
+					console.log(url);
+					// const img = document.createElement('img');
+					frame.src = url;
+
+					// frame.style.background = url;
+				}
+			});
+	});
+
+	function onLoad() {
+		fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${postObj.postedBy}`, {
+			credentials: 'include',
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				try {
+					if (data.status == 'pass') {
+						user = data.msg;
+					} else {
+						console.log(data.msg);
+					}
+				} catch (error) {
+					console.log(error);
+				}
+			});
+
+		fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${postObj._id}`, {
+			credentials: 'include',
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((response) => response.blob())
+			.then((data) => {
+				if (data.type == 'application/json') {
+					console.log('Text');
+				} else {
+					console.log(data);
+					console.log(postObj.message);
+					const url = URL.createObjectURL(data);
+					console.log(url);
+					// const img = document.createElement('img');
+					frame.src = url;
+
+					// frame.style.background = url;
+				}
+			});
 	}
 
-	onLoad();
+	//onLoad();
 </script>
 
 <svelte:head
@@ -38,8 +108,14 @@
 	<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mb-1" />
 	<h3 class="username text-amber-400 absolute">{name}</h3>
 	<div class="payload h-fit max-h-40 text-amber-400 text-sm">
-		{post.message}
+		{postObj.message}
 	</div>
+
+	<img
+		id="frame"
+		class="frame ml-auto mr-auto mb-1 mt-1 lg:w-4/12 lg:h-72  sm:w-5/12 sm:h-64 w-9/12 h-52 border-2 border-amber-400"
+		alt={postObj.message}
+	/>
 	<div class="post_buttons h-16 w-full flex flex-row justify-start items-center">
 		<button class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4 mr-6"
 			><i class="fa-regular fa-thumbs-up w-6 h-6 btnIcon" /></button

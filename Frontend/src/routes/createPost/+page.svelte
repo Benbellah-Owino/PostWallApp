@@ -33,30 +33,31 @@
 		console.log(body);
 
 		try {
-			// await fetch(`http://localhost:3000/api/v1/post/post`, {
-			// 	method: 'POST',
-			// 	redirect: 'follow',
-			// 	credentials: 'include',
-			// 	headers: {
-			// 		'Content-Type': 'application/json'
-			// 	},
-			// 	body: JSON.stringify(body)
-			// })
-			// 	.then((response) => response.json())
-			// 	.then((data) => {
-			// 		//alert('Posted');
-			// 		// window.open('/posts');
-			// 		console.log(data.msg);
-			// 		post_id=data.postId
-			// 	});
+			await fetch(`http://localhost:3000/api/v1/post/post`, {
+				method: 'POST',
+				redirect: 'follow',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(body)
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					//alert('Posted');
+					// window.open('/posts');
+					console.log(data.msg);
+					post_id = data.postId;
+					console.log(post_id);
+				});
 
-			if (files) {
+			if (files[0]) {
 				console.log(files[0]);
 
 				const formData = new FormData();
 				formData.append('media', files[0]);
 
-				await fetch(`http://localhost:3000/api/v1/addMedia`, {
+				await fetch(`http://localhost:3000/api/v1/addMedia?id=${post_id}`, {
 					method: 'POST',
 					redirect: 'follow',
 					credentials: 'include',
@@ -69,6 +70,8 @@
 						console.log(data.msg);
 						post_id = data.postId;
 					});
+			} else {
+				console.log('no');
 			}
 		} catch (error) {
 			console.error(error);

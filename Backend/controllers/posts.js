@@ -1,9 +1,15 @@
+const express = require('express');
+const app = express();
+const path = require('path');
+
 const Post = require("../models/PostsModel")
 const isAuth = require("../middleware/isAuth")
 const UserModel = require("../models/UserModel")
 
 const Media = require("../models/mediaModel")
 
+
+app.use(express.static(path.join(__dirname, 'upload')));
 
 const post = async (req, res) => {
     try {
@@ -101,15 +107,18 @@ const getAllPosts = async (req, res) => {
     try {
         const { userId } = await isAuth(req);
 
-        const blocked = await UserModel.findById({ userId }).blockedUsers
+        const blocked = await UserModel.findById({ userId }).blockedUsers  //Get all other users who have been blocked by the user
+
+        const posts = await Post.find().limit(20) //Limit the posts to 20
 
 
-        const posts = await Post.find().limit(20)
-        let finalPosts = [];
+
 
         if (posts) {
-            posts.forEach(post => {
+            let finalPosts = [];
+            posts.forEach(async (post) => {
                 let id = post._id
+
                 let flagged = false
                 if (blocked) {
                     blocked.forEach(block => {
@@ -119,16 +128,112 @@ const getAllPosts = async (req, res) => {
                     });
                 }
                 if (flagged === false) {
+
                     finalPosts.push(post)
+
+                    // let media = await Media.find({ post: post._id });
+
+                    // if ("") {
+                    //     let postobject = {
+                    //         postObj: post,
+                    //         media: "none",
+                    //         error: "media retrieval error"
+                    //     }
+
+                    //     finalPosts.push(postobject)
+                    // }
+
+
+
+                    //     if (media[0]) {
+
+                    //         let retrieved_media = path.join(__dirname, 'uploads', `${media[0].fileName}`)
+                    //         let media_stream = fdtouc
+                    //         let postobject = {
+                    //             postObj: post,
+                    //             media: retrieved_media,
+                    //             error: "none"
+                    //         }
+
+                    //         console.log(postobject)
+
+                    //         finalPosts.push(postobject);
+
+
+                    //     } else {
+
+                    //         let postobject = {
+                    //             postObj: post,
+                    //             media: "none",
+                    //             error: "none"
+                    //         }
+
+                    //         finalPosts.push(postobject)
+                    //     }
+
+
+                    //     // Media.find({ post: post._id }, (err, media) => {
+
+                    //     // if (err) {
+                    //     //     let postobject = {
+                    //     //         postObj: post,
+                    //     //         media: "none",
+                    //     //         error: "media retrieval error"
+                    //     //     }
+
+                    //     //     finalPosts.push(postobject)
+                    //     // }
+
+                    //     // if (media[0]) {
+                    //     //     console.log(media)
+                    //     //     let postobject = {
+                    //     //         postObj: post,
+                    //     //         media: media[0],
+                    //     //         error: "none"
+                    //     //     }
+
+                    //     //     finalPosts.push(postobject)
+                    //     // } else {
+
+                    //     //     let postobject = {
+                    //     //         postObj: post,
+                    //     //         media: "none",
+                    //     //         error: "none"
+                    //     //     }
+
+                    //     //     finalPosts.push(postobject)
+                    //     // }
+                    //     // })
+
                 }
+
             });
+
+            console.log("final posts =" + finalPosts)
+            console.log("-*-*-*-*-*-*-*-*-*-*-*-*-*-*")
+
+            res.status(200).json({ finalPosts })
         }
 
-        res.status(200).json({ finalPosts })
+
     } catch (error) {
         res.status(404).json({ msg: "An error occured" })
-        console.log(error)
+        console.log("post controlle 149" + error)
     }
+}
+
+const getMedia = async (req, res) => {
+    const { post_id } = req.query;
+
+    const media = await Media.find({ post: post_id });
+
+    if (media[0]) {
+        let retrieved_media = path.join(__dirname, '../uploads', `${media[0].fileName}`)
+        res.sendFile(retrieved_media)
+    } else {
+        res.json({ media: "none" })
+    }
+
 }
 
 const getSingleUserPost = async (req, res) => {
@@ -182,5 +287,6 @@ module.exports = {
     deletePost,
     getAllPosts,
     getSingleUserPost,
-    getMyPosts
+    getMyPosts,
+    getMedia
 }

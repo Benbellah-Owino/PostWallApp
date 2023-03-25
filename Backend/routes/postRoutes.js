@@ -1,7 +1,7 @@
 const express = require("express")
 const postRouter = express.Router()
 
-const { likePost, getMyPosts, deletePost, getSingleUserPost, post, comment, getAllPosts } = require("../controllers/posts")
+const { likePost, getMyPosts, deletePost, getSingleUserPost, post, comment, getAllPosts, getMedia } = require("../controllers/posts")
 
 postRouter.post("/post", post);
 postRouter.post("/comment", deletePost);
@@ -9,6 +9,7 @@ postRouter.post("/coment", comment);
 postRouter.post("/like", likePost);
 postRouter.get("/getposts", getAllPosts);
 postRouter.get("/getmyposts", getMyPosts);
+postRouter.get("/getmedia", getMedia);
 postRouter.get("/getsingleposts", getSingleUserPost);
 
 module.exports = postRouter
