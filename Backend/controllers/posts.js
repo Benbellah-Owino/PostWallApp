@@ -9,6 +9,8 @@ const UserModel = require("../models/UserModel")
 const Media = require("../models/mediaModel")
 
 
+
+
 app.use(express.static(path.join(__dirname, 'upload')));
 
 const post = async (req, res) => {
@@ -57,28 +59,39 @@ const comment = async (req, res) => {
     res.json({ msg: "Comment sent succesfully" })
 }
 
+//Controller for liking a post
 const likePost = async (req, res) => {
-    const userId = isAuth(req);
+    const { userId } = await isAuth(req); //Get user Id
 
-    const { postId } = req.body
+    const { postId } = req.body //Get post Id
 
 
+    let newLike = "liking"  //set action  liking or deliking
 
-    const opPost = await Post.findById({ _id: postId })
-    if (opPost) {
-        const isItLiked = await Post.find({ liked: userId })
+    try {
+        const object = await Post.findById({ _id: postId }, { likes: 1 })//Get user id's of those who've liked the post
+        const arr = object.likes //Extract the likes array
+        const isItLiked = arr.includes(userId) //Chekc if user Id is in likes array
+
 
         if (isItLiked == false) {
-            await Post.findByIdAndUpdate({ _id: postId }, { $push: { likes: userId } });
-            await Post.findByIdAndUpdate({ _id: postId }, { noLikes: { $inc: 1 } });
+
+            await Post.findOneAndUpdate({ _id: postId }, { $push: { likes: userId }, $inc: { noLikes: 1 } });  //If it's not present push userId to the likes array and increase number of likes
+
         }
         else if (isItLiked == true) {
-            const liked = await Post.findByIdAndUpdate({ _id: postId }, { $pull: { likes: userId } });
-            await Post.findByIdAndUpdate({ _id: postId }, { noLikes: { $inc: -1 } });
-        }
-    }
 
-    await Post.findByIdAndUpdate({ _id: postId }, { noLikes: { $inc: 1 } });
+            await Post.findOneAndUpdate({ _id: postId }, { $pull: { likes: userId }, $inc: { noLikes: -1 } }); //If it's present remove userId from the likes array and deacrease number of likes
+
+            newLike = "deliking"
+        }
+
+
+        res.status(200).json({ likestatus: newLike, status: "success" }) //Inform client of operation status
+    } catch (error) {
+        console.log("controllers > post.js > likePost> 91 post error:  " + error)
+        res.status(400).json({ status: "fail" })
+    }
 }
 
 const deletePost = async (req, res) => {
@@ -128,89 +141,10 @@ const getAllPosts = async (req, res) => {
                     });
                 }
                 if (flagged === false) {
-
                     finalPosts.push(post)
-
-                    // let media = await Media.find({ post: post._id });
-
-                    // if ("") {
-                    //     let postobject = {
-                    //         postObj: post,
-                    //         media: "none",
-                    //         error: "media retrieval error"
-                    //     }
-
-                    //     finalPosts.push(postobject)
-                    // }
-
-
-
-                    //     if (media[0]) {
-
-                    //         let retrieved_media = path.join(__dirname, 'uploads', `${media[0].fileName}`)
-                    //         let media_stream = fdtouc
-                    //         let postobject = {
-                    //             postObj: post,
-                    //             media: retrieved_media,
-                    //             error: "none"
-                    //         }
-
-                    //         console.log(postobject)
-
-                    //         finalPosts.push(postobject);
-
-
-                    //     } else {
-
-                    //         let postobject = {
-                    //             postObj: post,
-                    //             media: "none",
-                    //             error: "none"
-                    //         }
-
-                    //         finalPosts.push(postobject)
-                    //     }
-
-
-                    //     // Media.find({ post: post._id }, (err, media) => {
-
-                    //     // if (err) {
-                    //     //     let postobject = {
-                    //     //         postObj: post,
-                    //     //         media: "none",
-                    //     //         error: "media retrieval error"
-                    //     //     }
-
-                    //     //     finalPosts.push(postobject)
-                    //     // }
-
-                    //     // if (media[0]) {
-                    //     //     console.log(media)
-                    //     //     let postobject = {
-                    //     //         postObj: post,
-                    //     //         media: media[0],
-                    //     //         error: "none"
-                    //     //     }
-
-                    //     //     finalPosts.push(postobject)
-                    //     // } else {
-
-                    //     //     let postobject = {
-                    //     //         postObj: post,
-                    //     //         media: "none",
-                    //     //         error: "none"
-                    //     //     }
-
-                    //     //     finalPosts.push(postobject)
-                    //     // }
-                    //     // })
-
                 }
 
             });
-
-            console.log("final posts =" + finalPosts)
-            console.log("-*-*-*-*-*-*-*-*-*-*-*-*-*-*")
 
             res.status(200).json({ finalPosts })
         }

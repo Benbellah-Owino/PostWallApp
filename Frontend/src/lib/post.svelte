@@ -59,6 +59,31 @@
 				}
 			});
 	});
+
+	async function likePost() {
+		let bdy = {
+			postId: postObj._id
+		};
+		console.log(bdy);
+		await fetch(`http://localhost:3000/api/v1/post/like`, {
+			method: 'POST',
+			redirect: 'follow',
+			credentials: 'include',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(bdy)
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				//alert('Posted');
+				// window.open('/posts');
+				console.log(data.status);
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
 </script>
 
 <svelte:head
@@ -82,10 +107,12 @@
 		/>
 	{/if}
 	<div class="post_buttons h-16 w-full flex flex-row justify-start items-center">
-		<button class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4 mr-6"
-			><i class="fa-regular fa-thumbs-up w-6 h-6 btnIcon" /></button
+		<button
+			id="likePost"
+			class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4 mr-6"
+			on:click={likePost}><i class="fa-regular fa-thumbs-up w-6 h-6 btnIcon" /></button
 		>
-		<button class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4">
+		<button id="replyToPost" class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4">
 			<i class="fa-regular fa-comment w-6 h-6 btnIcon" /></button
 		>
 	</div>
