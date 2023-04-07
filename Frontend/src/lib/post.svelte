@@ -11,6 +11,11 @@
 
 	let isImage = false;
 
+	let isLiked;
+
+	let lc = postObj.noLikes;
+
+	$: likeCount = lc;
 	onMount(() => {
 		frame = document.getElementById('frame');
 
@@ -44,11 +49,8 @@
 			.then((response) => response.blob())
 			.then((data) => {
 				if (data.type == 'application/json') {
-					console.log('Text');
 					image = 'none';
 				} else {
-					console.log(data);
-					console.log(postObj.message);
 					image = URL.createObjectURL(data);
 
 					isImage = true;
@@ -58,27 +60,47 @@
 					// frame.style.background = url;
 				}
 			});
+
+		fetch(`http://localhost:3000/api/v1/post/checklike?post_id=${postObj._id}`, {
+			credentials: 'include',
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.liked == 'true') {
+					isLiked = true;
+				} else if (data.liked == 'false') {
+					isLiked = false;
+				}
+				console.log(`{\n post: ${postObj.message}\n isLiked: ${isLiked}}`);
+			});
 	});
 
 	async function likePost() {
-		let bdy = {
-			postId: postObj._id
-		};
-		console.log(bdy);
-		await fetch(`http://localhost:3000/api/v1/post/like`, {
+		// let bdy = {
+		// 	postId: postObj._id
+		// };
+		//console.log(bdy);
+		await fetch(`http://localhost:3000/api/v1/post/like?postId=${postObj._id}`, {
 			method: 'POST',
 			redirect: 'follow',
 			credentials: 'include',
 			headers: {
 				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(bdy)
+			}
+			// body: JSON.stringify(bdy)
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				//alert('Posted');
-				// window.open('/posts');
-				console.log(data.status);
+				if (isLiked === true) {
+					lc--;
+				} else if (isLiked === false) {
+					lc++;
+				}
+				isLiked = !isLiked;
 			})
 			.catch((error) => {
 				console.log(error);
@@ -106,12 +128,27 @@
 			src={image}
 		/>
 	{/if}
+
 	<div class="post_buttons h-16 w-full flex flex-row justify-start items-center">
-		<button
-			id="likePost"
-			class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4 mr-6"
-			on:click={likePost}><i class="fa-regular fa-thumbs-up w-6 h-6 btnIcon" /></button
-		>
+		{#if isLiked == false}
+			<div class="like_cont h-full w-fit flex flex-row justify-start items-center">
+				<button
+					id="likePost"
+					class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4 mr-1"
+					on:click={likePost}><i class="fa-regular fa-thumbs-up w-6 h-6 btnIcon" /></button
+				>
+				<h3 class="like_count text-amber-400">{likeCount}</h3>
+			</div>
+		{:else if isLiked == true}
+			<div class="like_cont h-full w-fit flex flex-row justify-start items-center">
+				<button
+					id="likePost"
+					class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4 mr-1"
+					on:click={likePost}><i class="fa-sharp fa-solid fa-thumbs-down" /></button
+				>
+				<h3 class="like_count text-amber-400">{likeCount}</h3>
+			</div>
+		{/if}
 		<button id="replyToPost" class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4">
 			<i class="fa-regular fa-comment w-6 h-6 btnIcon" /></button
 		>
