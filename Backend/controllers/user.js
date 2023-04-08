@@ -128,7 +128,7 @@ const getUser = async (req, res) => {
         const user = await User.findById({ _id: id }, projection)
         res.status(200).json({ msg: user, status: "pass" })
     } catch (error) {
-        console.log(error)
+        //console.log(error)
         res.status(400).json({ msg: "Encounterd an error", status: "fail" })
     }
 }

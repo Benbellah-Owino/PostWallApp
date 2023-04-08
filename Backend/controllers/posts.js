@@ -102,7 +102,7 @@ const likePost = async (req, res) => {
 }
 
 //Check if you've liked the post
-//Route:  /checkForLike
+//Route:  /checkLike
 const checkForLike = async (req, res) => {
     const { userId } = await isAuth(req); //Get user Id
 
