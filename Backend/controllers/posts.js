@@ -198,6 +198,22 @@ const getAllPosts = async (req, res) => {
     }
 }
 
+//Getting one post
+//route: /getpost
+
+const getPost = async (req, res) => {
+    const { userId } = await isAuth(req)
+    const { post_id } = req.query
+
+    try {
+        const post = await Post.findById(post_id);
+        res.status(200).json({ post, status: "success" });
+    } catch (error) {
+        console.log(`User ${userId} has an error getting post ${post_id}`);
+        res.status(500).json({ status: "fail", msg: "failed getting post" });
+    }
+}
+
 const getMedia = async (req, res) => {
     const { post_id } = req.query;
 
@@ -268,6 +284,7 @@ module.exports = {
     deletePost,
     getAllPosts,
     getSingleUserPost,
+    getPost,
     getMyPosts,
     getMedia,
     checkForLike
