@@ -4,7 +4,7 @@ const postRouter = express.Router()
 const { likePost, getMyPosts, deletePost, getSingleUserPost, post, comment, getAllPosts, getPost, getMedia, checkForLike } = require("../controllers/posts")
 
 postRouter.post("/post", post);
-postRouter.post("/comment", deletePost);
+//postRouter.post("/comment", deletePost);
 postRouter.post("/comment", comment);
 postRouter.post("/like", likePost);
 postRouter.get("/getposts", getAllPosts);

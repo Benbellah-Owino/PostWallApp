@@ -51,13 +51,13 @@ const post = async (req, res) => {
 //Route: /comment
 const comment = async (req, res) => {
     try {
-        const userId = isAuth(req);
+        const { userId, userName } = await isAuth(req);
 
         const { message, isReply, tagged, replyTo } = req.body; //Get comment details 
 
         const commentObject = {
             message,
-            createdBy: userId,
+            postedBy: userId,
             replyTo,
             tagged,
             isReply
@@ -67,7 +67,7 @@ const comment = async (req, res) => {
 
         res.status(201).json({ msg: "Comment sent succesfully", status: "pass", postId: createdPost._id })
     } catch (error) {
-        console.log(`controllers > post.js > comment > 69: \n ${error}`);
+        console.log(`controllers > post.js > comment > 70: \n ${error}`);
         res.status(500).json({ msg: "Reply could not be created", status: "fail" })
     }
 }
