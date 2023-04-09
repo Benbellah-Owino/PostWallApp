@@ -40,7 +40,7 @@ const post = async (req, res) => {
 
         const post = await Post.create(postObject) //Save the post in database
 
-        res.status(200).json({ msg: "Post created succefully", postId: post._id })
+        res.status(201).json({ msg: "Post created succefully", postId: post._id })
     } catch (error) {
         console.log(error)
         res.status(400).json({ msg: "Post not created" })
@@ -50,23 +50,30 @@ const post = async (req, res) => {
 //Post for commenting on a post
 //Route: /comment
 const comment = async (req, res) => {
-    const userId = isAuth(req);
+    try {
+        const userId = isAuth(req);
 
-    const { message, tagged, originalPost } = req.body; //Get comment details 
+        const { message, isReply, tagged, replyTo } = req.body; //Get comment details 
 
-    const commentObject = {
-        message,
-        createdBy: userId,
-        originalPost,
-        tagged
+        const commentObject = {
+            message,
+            createdBy: userId,
+            replyTo,
+            tagged,
+            isReply
+        }
+
+        const createdPost = await Post.create(commentObject);
+
+        res.status(201).json({ msg: "Comment sent succesfully", status: "pass", postId: createdPost._id })
+    } catch (error) {
+        console.log(`controllers > post.js > comment > 69: \n ${error}`);
+        res.status(500).json({ msg: "Reply could not be created", status: "fail" })
     }
-
-    await Post.create(commentObject);
-
-    res.json({ msg: "Comment sent succesfully" })
 }
 
 //Controller for liking a post
+//Route: 
 const likePost = async (req, res) => {
     const { userId } = await isAuth(req); //Get user Id
 
@@ -136,6 +143,9 @@ const checkForLike = async (req, res) => {
     }
 }
 
+
+//Controller for deleting a post
+//
 const deletePost = async (req, res) => {
     const userId = isAuth(req);
 

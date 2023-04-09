@@ -1,22 +1,17 @@
 <script>
 	import { identity } from 'svelte/internal';
 	import { onMount } from 'svelte';
-	let user = 'HelloWorld';
+	export let payload;
 
 	let files = [];
 
-	let isImage = false;
-
 	let postArea;
-	//let display;
 	let pic;
-	//let video;
-	let userDetails;
+
 	onMount(async () => {
 		postArea = document.getElementById('txt_reply');
-		//display = document.getElementById('display');
+
 		pic = document.getElementById('content_pic');
-		//video = document.getElementById('content_video');
 	});
 
 	function selectFile() {
@@ -30,8 +25,6 @@
 			const file = input.files[0];
 			const reader = new FileReader();
 			reader.addEventListener('load', () => {
-				//console.log(reader.result);
-				// display.style.backgroundImage = `url(${reader.result})`;
 				pic.src = reader.result;
 
 				files.push(file);
@@ -42,14 +35,75 @@
 		};
 		input.click();
 	}
+
+	//Function for posting the reply
+	async function reply() {
+		let replyObj = {
+			replyTo: payload.postId,
+			message: postArea.value,
+			isReply: true,
+			tagged: []
+		};
+
+		console.log(replyObj);
+
+		let post_id;
+
+		try {
+			await fetch(`http://localhost:3000/api/v1/post/comment`, {
+				method: 'POST',
+				redirect: 'follow',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(replyObj)
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					//alert('Posted');
+					// window.open('/posts');
+					console.log(data.msg);
+					post_id = data.postId;
+					console.log(post_id);
+				});
+
+			if (files[0]) {
+				console.log(files[0]);
+
+				const formData = new FormData();
+				formData.append('media', files[0]);
+
+				await fetch(`http://localhost:3000/api/v1/addMedia?id=${post_id}`, {
+					method: 'POST',
+					redirect: 'follow',
+					credentials: 'include',
+					body: formData
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						//alert('Posted');
+						// window.open('/posts');
+						console.log(data.msg);
+						post_id = data.postId;
+					});
+			} else {
+				console.log('no');
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	console.log(payload);
 </script>
 
 <svelte:head>
 	<script src="https://kit.fontawesome.com/42b8efcb5a.js" crossorigin="anonymous"></script>
 </svelte:head>
 
-<main class="border-b-2 border-amber-400 p-1 w-11/12">
-	<h3 class="text-sm mb-1">Reply to @{user}</h3>
+<main class="border-b-2 border-amber-400 p-1 w-11/12 ml-16">
+	<h3 class="text-sm mb-1">Reply to @{payload.user}</h3>
 	<textarea
 		type="text"
 		name="reply"
@@ -78,7 +132,8 @@
 
 		<button
 			class="submit bg-zinc-900 border border-amber-400 w-12 rounded-2xl p-1 hover:bg-amber-400 hover:text-zinc-900"
-			id="submit">reply</button
+			id="submit"
+			on:click={reply}>reply</button
 		>
 	</div>
 </main>

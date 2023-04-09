@@ -118,7 +118,10 @@
 		src="https://kit.fontawesome.com/42b8efcb5a.js"
 		crossorigin="anonymous"></script></svelte:head
 >
-<div class="post bg-zinc-900 h-fit w-screen relative border-b-2 pt-2" on:click={openPost}>
+<div
+	class="post bg-zinc-900 h-fit w-screen relative border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600"
+	on:click={openPost}
+>
 	<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mb-1" />
 	<h3 class="username text-amber-400 absolute">{name}</h3>
 	<div class="payload h-fit max-h-40 text-amber-400 text-sm">

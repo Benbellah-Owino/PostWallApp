@@ -2,7 +2,7 @@
 	import NavBar from '../../lib/vertNavbar.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
-	import { writable } from 'svelte/store';
+
 	import CreateReply from '../../lib/createReply.svelte';
 
 	let user = { name: '' };
@@ -12,7 +12,7 @@
 
 	let image;
 
-	let postObj = writable({});
+	let postObj = {};
 
 	let isLiked;
 
@@ -24,6 +24,8 @@
 	let pageUrl;
 
 	let postId;
+
+	let payload = {};
 	onMount(async () => {
 		frame = document.getElementById('frame');
 		pageUrl = $page.url.search;
@@ -38,12 +40,11 @@
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				$postObj = data.post;
-				lc = $postObj.noLikes;
-				console.log($postObj);
+				postObj = data.post;
+				lc = postObj.noLikes;
 			});
 
-		await fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${$postObj.postedBy}`, {
+		await fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${postObj.postedBy}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -101,6 +102,10 @@
 				}
 				console.log(`{\n post: ${postObj.message}\n isLiked: ${isLiked}}`);
 			});
+
+		payload.postId = postObj._id;
+		payload.post = postObj.message;
+		payload.user = name;
 	});
 
 	async function likePost() {
@@ -137,14 +142,14 @@
 		<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mb-1" />
 		<h3 class="username text-amber-400 absolute top-4 left-12">{name}</h3>
 		<div class="payload h-fit max-h-40 text-amber-400 text-sm">
-			{$postObj.message}
+			{postObj.message}
 		</div>
 
 		{#if isImage === true}
 			<img
 				id="frame"
 				class="frame ml-auto mr-auto mb-1 mt-1 lg:w-4/12 lg:h-72  sm:w-5/12 sm:h-64 w-9/12 h-52 border-2 border-amber-400"
-				alt={$postObj.message}
+				alt={postObj.message}
 				src={image}
 			/>
 		{/if}
@@ -176,6 +181,7 @@
 
 		<div class="post" />
 	</div>
+	<CreateReply {payload} />
 </main>
 
 <style>
