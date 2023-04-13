@@ -224,6 +224,25 @@ const getPost = async (req, res) => {
     }
 }
 
+//Get only post
+
+const getOriginalPoster = async (req, res) => {
+    try {
+        const { post_id } = req.query;
+
+        const projection = { postedBy: 1 };
+
+        const postedBy = await Post.findById({ _id: post_id }, projection)
+        res.status(200).json({ postedBy, status: "pass" })
+    } catch (error) {
+        console.log(`controllers > post.js > getOriginalPoster > 238 \n ${error}`)
+        res.status(500).json({ msg: "Error geting the original user", status: "fail" })
+    }
+}
+
+
+//Get the medial for a post
+//Route: /getmedia
 const getMedia = async (req, res) => {
     const { post_id } = req.query;
 
@@ -242,6 +261,7 @@ const getMedia = async (req, res) => {
     }
 
 }
+
 
 const getSingleUserPost = async (req, res) => {
     try {
@@ -297,5 +317,6 @@ module.exports = {
     getPost,
     getMyPosts,
     getMedia,
-    checkForLike
+    checkForLike,
+    getOriginalPoster
 }

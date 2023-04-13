@@ -15,11 +15,14 @@
 
 	let lc = postObj.noLikes;
 
+	let replyTo;
+	let replyUser;
+
 	$: likeCount = lc;
-	onMount(() => {
+	onMount(async () => {
 		frame = document.getElementById('frame');
 
-		fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${postObj.postedBy}`, {
+		await fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${postObj.postedBy}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -39,7 +42,7 @@
 				}
 			});
 
-		fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${postObj._id}`, {
+		await fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${postObj._id}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -61,7 +64,7 @@
 				}
 			});
 
-		fetch(`http://localhost:3000/api/v1/post/checklike?post_id=${postObj._id}`, {
+		await fetch(`http://localhost:3000/api/v1/post/checklike?post_id=${postObj._id}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -75,8 +78,46 @@
 				} else if (data.liked == 'false') {
 					isLiked = false;
 				}
-				console.log(`{\n post: ${postObj.message}\n isLiked: ${isLiked}}`);
+				// console.log(`{\n post: ${postObj.message}\n isLiked: ${isLiked}}`);
 			});
+
+		if (postObj.isReply) {
+			console.log(postObj.replyTo);
+			await fetch(`http://localhost:3000/api/v1/post/getop?post_id=${postObj.replyTo}`, {
+				credentials: 'include',
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					//console.log(postObj.replyTo);
+
+					replyTo = data.postedBy.postedBy;
+				});
+
+			await fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${replyTo}`, {
+				credentials: 'include',
+				withCredentials: true,
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+				.then((response) => response.json())
+				.then((data) => {
+					try {
+						if (data.status == 'pass') {
+							replyUser = data.msg.name;
+							console.log(replyUser);
+						} else {
+							console.log(data.msg);
+						}
+					} catch (error) {
+						console.log(error);
+					}
+				});
+		}
 	});
 
 	async function likePost() {
@@ -119,12 +160,18 @@
 		crossorigin="anonymous"></script></svelte:head
 >
 <div
-	class="post bg-zinc-900 h-fit w-screen relative border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600"
+	class="post flex flex-col  h-fit w-screen relative  bg-zinc-900 border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600 "
 	on:click={openPost}
 >
-	<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mb-1" />
-	<h3 class="username text-amber-400 absolute">{name}</h3>
-	<div class="payload h-fit max-h-40 text-amber-400 text-sm">
+	{#if postObj.isReply == true}
+		<h3 class=" mb-1 font-size">Reply to @{replyUser}</h3>
+	{/if}
+	<div class="user_details flex flex-row justify-start items-center float-left h-fit mb-4 p-1  ">
+		<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mr-4" />
+		<h3 class="username text-amber-400">{name}</h3>
+	</div>
+
+	<div class="payload h-fit max-h-40 text-amber-400 text-sm ml-2 ">
 		{postObj.message}
 	</div>
 
