@@ -195,9 +195,12 @@
 					<h3 class="like_count text-amber-400">{likeCount}</h3>
 				</div>
 			{/if}
-			<button id="replyToPost" class="postBtn text-amber-400 w-9 h-9 rounded-md ml-4">
-				<i class="fa-regular fa-comment w-6 h-6 btnIcon" /></button
-			>
+			<div class="like_cont h-full w-fit ml-4 flex flex-row justify-start items-center">
+				<button id="replyToPost" class="postBtn w-9 h-9 rounded-md text-amber-400 text-center ">
+					<i class="fa-regular fa-comment w-6 h-6 btnIcon" /></button
+				>
+				<h3 class="reply_count text-amber-400">{postObj.noReplies}</h3>
+			</div>
 		</div>
 
 		<div class="post" />

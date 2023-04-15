@@ -164,11 +164,11 @@
 	on:click={openPost}
 >
 	{#if reply.isReply == true}
-		<h3 class=" mb-1 font-size">Reply to @{replyUser}</h3>
+		<h3 class=" mb-1 text-sm">Reply to @{replyUser}</h3>
 	{/if}
 	<div class="user_details flex flex-row justify-start items-center float-left h-fit mb-4 p-1  ">
-		<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mr-4" />
-		<h3 class="username text-amber-400">{name}</h3>
+		<div class="profile_pic border-2 w-6 h-6 border-amber-400 rounded-full mr-4" />
+		<h3 class="username text-amber-400 text-sm">{name}</h3>
 	</div>
 
 	<div class="payload h-fit max-h-40 text-amber-400 text-sm ml-2 ">
