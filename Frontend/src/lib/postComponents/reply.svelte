@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
-	export let post;
-	let postObj = post;
+	export let reply;
+
 	let user = { name: '' };
 	$: name = user.name;
 
@@ -13,7 +13,7 @@
 
 	let isLiked;
 
-	let lc = postObj.noLikes;
+	let lc = reply.noLikes;
 
 	let replyTo;
 	let replyUser;
@@ -22,7 +22,7 @@
 	onMount(async () => {
 		frame = document.getElementById('frame');
 
-		await fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${postObj.postedBy}`, {
+		await fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${reply.postedBy}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -42,7 +42,7 @@
 				}
 			});
 
-		await fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${postObj._id}`, {
+		await fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${reply._id}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -64,7 +64,7 @@
 				}
 			});
 
-		await fetch(`http://localhost:3000/api/v1/post/checklike?post_id=${postObj._id}`, {
+		await fetch(`http://localhost:3000/api/v1/post/checklike?post_id=${reply._id}`, {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -78,12 +78,12 @@
 				} else if (data.liked == 'false') {
 					isLiked = false;
 				}
-				// console.log(`{\n post: ${postObj.message}\n isLiked: ${isLiked}}`);
+				// console.log(`{\n post: ${reply.message}\n isLiked: ${isLiked}}`);
 			});
 
-		if (postObj.isReply) {
-			console.log(postObj.replyTo);
-			await fetch(`http://localhost:3000/api/v1/post/getop?post_id=${postObj.replyTo}`, {
+		if (reply.isReply) {
+			console.log(reply.replyTo);
+			await fetch(`http://localhost:3000/api/v1/post/getop?post_id=${reply.replyTo}`, {
 				credentials: 'include',
 				withCredentials: true,
 				headers: {
@@ -92,7 +92,7 @@
 			})
 				.then((response) => response.json())
 				.then((data) => {
-					//console.log(postObj.replyTo);
+					//console.log(reply.replyTo);
 
 					replyTo = data.postedBy.postedBy;
 				});
@@ -122,10 +122,10 @@
 
 	async function likePost() {
 		// let bdy = {
-		// 	postId: postObj._id
+		// 	postId: reply._id
 		// };
 		//console.log(bdy);
-		await fetch(`http://localhost:3000/api/v1/post/like?postId=${postObj._id}`, {
+		await fetch(`http://localhost:3000/api/v1/post/like?postId=${reply._id}`, {
 			method: 'POST',
 			redirect: 'follow',
 			credentials: 'include',
@@ -150,7 +150,7 @@
 
 	//When the post is clicked
 	function openPost() {
-		window.open(`/postPage?post_id=${postObj._id}`);
+		window.open(`/postPage?post_id=${reply._id}`);
 	}
 </script>
 
@@ -160,10 +160,10 @@
 		crossorigin="anonymous"></script></svelte:head
 >
 <div
-	class="post flex flex-col  h-fit w-screen relative  bg-zinc-900 border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600 "
+	class="post flex flex-col  h-fit w-screen relative pl-3 bg-zinc-900 border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600"
 	on:click={openPost}
 >
-	{#if postObj.isReply == true}
+	{#if reply.isReply == true}
 		<h3 class=" mb-1 font-size">Reply to @{replyUser}</h3>
 	{/if}
 	<div class="user_details flex flex-row justify-start items-center float-left h-fit mb-4 p-1  ">
@@ -172,14 +172,14 @@
 	</div>
 
 	<div class="payload h-fit max-h-40 text-amber-400 text-sm ml-2 ">
-		{postObj.message}
+		{reply.message}
 	</div>
 
 	{#if isImage === true}
 		<img
 			id="frame"
 			class="frame ml-auto mr-auto mb-1 mt-1 lg:w-4/12 lg:h-72  sm:w-5/12 sm:h-64 w-9/12 h-52 border-2 border-amber-400"
-			alt={postObj.message}
+			alt={reply.message}
 			src={image}
 		/>
 	{/if}
@@ -209,7 +209,7 @@
 			<button id="replyToPost" class="postBtn w-9 h-9 rounded-md text-amber-400 text-center ">
 				<i class="fa-regular fa-comment w-6 h-6 btnIcon" /></button
 			>
-			<h3 class="reply_count text-amber-400">{postObj.noReplies}</h3>
+			<h3 class="reply_count text-amber-400">{reply.noReplies}</h3>
 		</div>
 	</div>
 </div>

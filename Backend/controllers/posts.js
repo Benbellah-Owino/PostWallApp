@@ -6,7 +6,8 @@ const Post = require("../models/PostsModel")
 const isAuth = require("../middleware/isAuth")
 const UserModel = require("../models/UserModel")
 
-const Media = require("../models/mediaModel")
+const Media = require("../models/mediaModel");
+const { Console } = require('console');
 
 
 
@@ -65,9 +66,11 @@ const comment = async (req, res) => {
 
         const createdPost = await Post.create(commentObject);
 
+        await Post.findOneAndUpdate({ _id: replyTo }, { $inc: { noReplies: 1 } });
+
         res.status(201).json({ msg: "Comment sent succesfully", status: "pass", postId: createdPost._id })
     } catch (error) {
-        console.log(`controllers > post.js > comment > 70: \n ${error}`);
+        console.log(`controllers > post.js > comment > 72: \n ${error}`);
         res.status(500).json({ msg: "Reply could not be created", status: "fail" })
     }
 }
@@ -208,6 +211,48 @@ const getAllPosts = async (req, res) => {
     }
 }
 
+//Get replies to a post
+//route: /getreplies
+const getReplies = async (req, res) => {
+    try {
+        const { post_id } = req.query
+        const { userId } = await isAuth(req);
+        const blocked = await UserModel.findById({ userId }).blockedUsers  //Get all other users who have been blocked by the user
+
+        const replies = await Post.find({ replyTo: post_id })
+
+
+
+
+        if (replies) {
+            let finalReplies = [];
+            replies.forEach(async (reply) => {
+                let id = reply.postedBy
+
+                let flagged = false
+                if (blocked) {
+                    blocked.forEach(block => {
+                        if (block == id) {
+                            flagged = true
+                        }
+                    });
+                }
+                if (flagged === false) {
+                    finalReplies.push(reply)
+                }
+
+            });
+
+
+            res.status(200).json({ finalReplies, status: "pass" })
+        }
+
+    } catch (error) {
+        res.status(404).json({ msg: "An error occured", status: "fail" })
+        console.log("post controlle 251" + error)
+    }
+}
+
 //Getting one post
 //route: /getpost
 
@@ -318,5 +363,6 @@ module.exports = {
     getMyPosts,
     getMedia,
     checkForLike,
-    getOriginalPoster
+    getOriginalPoster,
+    getReplies
 }

@@ -4,6 +4,9 @@
 	import { page } from '$app/stores';
 
 	import CreateReply from '../../lib/createReply.svelte';
+	import Reply from '../../lib/postComponents/reply.svelte';
+
+	import { replies } from '../../stores/posts';
 
 	let user = { name: '' };
 	$: name = user.name;
@@ -27,10 +30,12 @@
 
 	let payload = {};
 	onMount(async () => {
+		//Get post id
 		frame = document.getElementById('frame');
 		pageUrl = $page.url.search;
 		postId = pageUrl.split('=')[1];
 
+		//Get the post from API
 		await fetch(`http://localhost:3000/api/v1/post/getpost?post_id=${postId}`, {
 			credentials: 'include',
 			withCredentials: true,
@@ -44,6 +49,7 @@
 				lc = postObj.noLikes;
 			});
 
+		//Get the details of poster
 		await fetch(`http://localhost:3000/api/v1/auth/getpostuser?id=${postObj.postedBy}`, {
 			credentials: 'include',
 			withCredentials: true,
@@ -64,6 +70,7 @@
 				}
 			});
 
+		//get the media files attached to the post
 		await fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${postId}`, {
 			credentials: 'include',
 			withCredentials: true,
@@ -86,6 +93,7 @@
 				}
 			});
 
+		//Check if user has liked the post
 		await fetch(`http://localhost:3000/api/v1/post/checklike?post_id=${postId}`, {
 			credentials: 'include',
 			withCredentials: true,
@@ -106,6 +114,19 @@
 		payload.postId = postObj._id;
 		payload.post = postObj.message;
 		payload.user = name;
+
+		//Get replies
+		await fetch(`http://localhost:3000/api/v1/post/getreplies?post_id=${postId}`, {
+			credentials: 'include',
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				replies.set(data.finalReplies);
+			});
 	});
 
 	async function likePost() {
@@ -182,6 +203,11 @@
 		<div class="post" />
 	</div>
 	<CreateReply {payload} />
+	<div class="reply_cont h-fit w-11/12 ml-16">
+		{#each $replies as reply (reply._id)}
+			<Reply {reply} />
+		{/each}
+	</div>
 </main>
 
 <style>
