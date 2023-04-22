@@ -3,8 +3,9 @@
 	import { onMount } from 'svelte';
 	import { myFollowers } from '../stores/users';
 
-	onMount(async () => {
-		await fetch('http://localhost:3000/api/v1/auth/getfollowers', {
+	onMount(() => {
+		console.log('Fire');
+		fetch('http://localhost:3000/api/v1/auth/getfollowers', {
 			credentials: 'include',
 			withCredentials: true,
 			headers: {
@@ -13,7 +14,10 @@
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				//myFollowers.set(data.final);
+				myFollowers.set(data.followerArray);
+			})
+			.catch((error) => {
+				console.log(error);
 			});
 	});
 </script>
@@ -21,9 +25,9 @@
 <div
 	class="users_container post_wall absolute bg-amber-900 flex flex-col items-center m-0 p-0 w-10/12 top-20 left-16"
 >
-	<!-- {#each myFollowers as user (user._id)}
+	{#each $myFollowers as user (user._id)}
 		<User {user} />
-	{/each} -->
+	{/each}
 </div>
 
 <style>

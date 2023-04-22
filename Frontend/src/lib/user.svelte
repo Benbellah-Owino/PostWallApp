@@ -18,7 +18,7 @@
 				.then((response) => response.json())
 				.then((data) => {
 					console.log(data.msg);
-					alert('You have followed this user');
+					alert(data.msg);
 				});
 		} catch (error) {
 			console.error(error.msg);

@@ -3,7 +3,7 @@
 	import MainNav from '$lib/vertNavbar.svelte';
 	import MyPosts from '../../myComponents/myPosts.svelte';
 	import MyFollowers from '../../myComponents/myFollowers.svelte';
-	import MyFollowed from '../../myComponents/myFollowed.svelte';
+	import ImFollowed from '../../myComponents/imFollowing.svelte';
 	import { myMenu } from '../../stores/myMenuStore';
 	import CreatePostButton from '$lib/createPostButton.svelte';
 
@@ -44,7 +44,7 @@
 	{:else if $myMenu === 2}
 		<MyFollowers class=" w-10/12 left-11 top-20" />
 	{:else if $myMenu === 3}
-		<MyFollowed class=" w-10/12 left-11 top-20" />
+		<ImFollowed class=" w-10/12 left-11 top-20" />
 	{/if}
 </main>
 

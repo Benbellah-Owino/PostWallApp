@@ -270,9 +270,9 @@ const followUser = async (req, res) => {
         let followId = req.body.id;
 
 
-        let user = await User.findByIdAndUpdate({ _id: userId }, { $pull: { following: followId } });
+        let user = await User.findByIdAndUpdate({ _id: userId }, { $push: { following: followId } });
 
-        let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $pull: { followers: userId } });
+        let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $push: { followers: userId } });
 
         res.json({ msg: `You have followed ${followedUser.name}` })
     } catch (error) {
@@ -354,7 +354,7 @@ const getFollowing = async (req, res) => {
             final.push(user)
         }
     })
-    console.log(final)
+
 
     //console.log("User.js 318" + final)
 
@@ -362,25 +362,28 @@ const getFollowing = async (req, res) => {
 }
 
 const getFollowers = async (req, res) => {
-    try {
-        const { userID } = await isAuth(req);
 
-        let followers
+    try {
+        const { userId } = await isAuth(req);
+
+        let followers = []
         let followerArray = []
 
-        const user = await User.findById(userID)
+        const user = await User.findById(userId)
 
         if (user) {
             followers = user.followers
 
-            followers.forEach(async follower => {
-                let follow = await User.findById(follower);
+            for (let i = 0; i < followers.length; i++) {
+                let follow = await User.findById(followers[i]);
                 let obj = {
                     userName: follow.name,
                     userId: follow._id
                 }
-                followerArray.push(obj)
-            });
+                followerArray[i] = obj
+            }
+
+            console.log(followerArray)
 
             res.status(200).json({ followerArray })
         }

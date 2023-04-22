@@ -57,10 +57,6 @@
 					image = URL.createObjectURL(data);
 
 					isImage = true;
-					// const img = document.createElement('img');
-					//frame.src = url;
-
-					// frame.style.background = url;
 				}
 			});
 
@@ -78,11 +74,9 @@
 				} else if (data.liked == 'false') {
 					isLiked = false;
 				}
-				// console.log(`{\n post: ${postObj.message}\n isLiked: ${isLiked}}`);
 			});
 
 		if (postObj.isReply) {
-			console.log(postObj.replyTo);
 			await fetch(`http://localhost:3000/api/v1/post/getop?post_id=${postObj.replyTo}`, {
 				credentials: 'include',
 				withCredentials: true,
@@ -92,8 +86,6 @@
 			})
 				.then((response) => response.json())
 				.then((data) => {
-					//console.log(postObj.replyTo);
-
 					replyTo = data.postedBy.postedBy;
 				});
 
@@ -109,7 +101,6 @@
 					try {
 						if (data.status == 'pass') {
 							replyUser = data.msg.name;
-							console.log(replyUser);
 						} else {
 							console.log(data.msg);
 						}
@@ -121,10 +112,6 @@
 	});
 
 	async function likePost() {
-		// let bdy = {
-		// 	postId: postObj._id
-		// };
-		//console.log(bdy);
 		await fetch(`http://localhost:3000/api/v1/post/like?postId=${postObj._id}`, {
 			method: 'POST',
 			redirect: 'follow',
@@ -132,7 +119,6 @@
 			headers: {
 				'Content-Type': 'application/json'
 			}
-			// body: JSON.stringify(bdy)
 		})
 			.then((response) => response.json())
 			.then((data) => {
