@@ -1,7 +1,7 @@
 <script>
-	import User from '$lib/user.svelte';
+	import Follower from '../userComponents/follower.svelte';
 	import { onMount } from 'svelte';
-	import { myFollowers } from '../stores/users';
+	import { myFollowers } from '../../stores/users';
 
 	onMount(() => {
 		console.log('Fire');
@@ -26,7 +26,7 @@
 	class="users_container post_wall absolute bg-amber-900 flex flex-col items-center m-0 p-0 w-10/12 top-20 left-16"
 >
 	{#each $myFollowers as user (user._id)}
-		<User {user} />
+		<Follower {user} />
 	{/each}
 </div>
 

@@ -1,7 +1,7 @@
 <script>
 	import Post from '$lib/post.svelte';
 	import { onMount } from 'svelte';
-	import { myPosts } from '../stores/posts';
+	import { myPosts } from '../../stores/posts';
 
 	onMount(async () => {
 		await fetch('http://localhost:3000/api/v1/post/getmyposts', {

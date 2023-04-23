@@ -270,15 +270,19 @@ const followUser = async (req, res) => {
         let followId = req.body.id;
 
 
-        let user = await User.findByIdAndUpdate({ _id: userId }, { $push: { following: followId } });
+        let user = await User.findByIdAndUpdate({ _id: userId }, { $push: { following: followId } }); //Add the followed user to the subject user's list of users followed 
 
-        let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $push: { followers: userId } });
+        let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $push: { followers: userId } }); //Add the subject  from the unfollowed user user's list of followers
 
-        res.json({ msg: `You have followed ${followedUser.name}` })
+        res.status(200).json({ msg: `You have followed ${followedUser.name}`, status: "pass" })
     } catch (error) {
-        console.log(error)
+        console.log(`controllers > user.js > followUser > 279 :\n ${error} \n---------------------\n`)
+        res.status(500).json({ msg: "There was an error doing the requested action", status: "fail" })
     };
 }
+
+//Controller for unfollowing a user
+//Route: /unfollow
 const unfollowUser = async (req, res) => {
     try {
         let { userId } = await isAuth(req);
@@ -286,13 +290,14 @@ const unfollowUser = async (req, res) => {
         let followId = req.body.id;
 
 
-        let user = await User.findByIdAndUpdate({ _id: userId }, { $push: { following: followId } });
+        let user = await User.findByIdAndUpdate({ _id: userId }, { $pull: { following: followId } }); //Remove the unfollowed user from the subject user's list of users followed 
 
-        let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $push: { followers: userId } });
+        let followedUser = await User.findByIdAndUpdate({ _id: followId }, { $pull: { followers: userId } }); //Remove the subject  from the unfollowed user user's list of followers 
 
-        res.json({ msg: `You have followed ${followedUser.name}` })
+        res.json({ msg: `You have unfollowed ${followedUser.name}` })
     } catch (error) {
-        console.log(error)
+        console.log(`controllers > user.js > followUser > 299 :\n ${error} \n---------------------\n`)
+        res.status(500).json({ msg: "There was an error doing the requested action", status: "fail" })
     };
 }
 
@@ -345,7 +350,6 @@ const getFollowing = async (req, res) => {
     const followed = await User.find({ "_id": userId }, { following: 1 });
 
     const following = followed[0].following
-    //const f= followed
 
     let final = []
 
@@ -355,8 +359,6 @@ const getFollowing = async (req, res) => {
         }
     })
 
-
-    //console.log("User.js 318" + final)
 
     res.status(200).json({ final })
 }
@@ -410,5 +412,6 @@ module.exports = {
     getFollowers,
     getUserDetails,
     getUser,
-    getFollowing
+    getFollowing,
+    unfollowUser
 }

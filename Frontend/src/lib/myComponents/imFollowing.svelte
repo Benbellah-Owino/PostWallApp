@@ -1,7 +1,7 @@
 <script>
-	import User from '$lib/user.svelte';
+	import Following from '../userComponents/following.svelte';
 	import { onMount } from 'svelte';
-	import { imFollowing } from '../stores/users';
+	import { imFollowing } from '../../stores/users';
 
 	onMount(async () => {
 		console.log('fire');
@@ -25,7 +25,7 @@
 >
 	<h1 class="-top-24 left-10">Hello</h1>
 	{#each $imFollowing as user (user._id)}
-		<User {user} />
+		<Following {user} />
 	{/each}
 </div>
 

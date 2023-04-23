@@ -1,7 +1,7 @@
 <script>
 	import Post from '$lib/post.svelte';
 	import NavBar from '$lib/navBar.svelte';
-	import CreatePostButton from '$lib/createPostButton.svelte';
+	import CreatePostButton from '$lib/postComponents/createPostButton.svelte';
 	import { onMount } from 'svelte';
 	import { posts } from '../../stores/posts.js';
 

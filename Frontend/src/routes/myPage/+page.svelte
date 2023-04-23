@@ -1,11 +1,11 @@
 <script>
 	import NavBar from '$lib/myNavbar.svelte';
 	import MainNav from '$lib/vertNavbar.svelte';
-	import MyPosts from '../../myComponents/myPosts.svelte';
-	import MyFollowers from '../../myComponents/myFollowers.svelte';
-	import ImFollowed from '../../myComponents/imFollowing.svelte';
+	import MyPosts from '$lib/myComponents/myPosts.svelte';
+	import MyFollowers from '$lib/myComponents/myFollowers.svelte';
+	import ImFollowed from '$lib/myComponents/imFollowing.svelte';
 	import { myMenu } from '../../stores/myMenuStore';
-	import CreatePostButton from '$lib/createPostButton.svelte';
+	import CreatePostButton from '$lib/postComponents/createPostButton.svelte';
 
 	// customElements.define('MainNav', MainNav);
 	let menuActive = false;

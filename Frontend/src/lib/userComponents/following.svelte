@@ -6,7 +6,7 @@
 		};
 
 		try {
-			await fetch(`http://localhost:3000/api/v1/auth/followUser`, {
+			await fetch(`http://localhost:3000/api/v1/auth/unfollow`, {
 				method: 'POST',
 				credentials: 'include',
 				withCredentials: true,
@@ -18,7 +18,7 @@
 				.then((response) => response.json())
 				.then((data) => {
 					console.log(data.msg);
-					alert('You have unfollowed this user');
+					alert(data.msg);
 				});
 		} catch (error) {
 			console.error(error.msg);
@@ -38,7 +38,7 @@
 		<i class="fa-regular fa-user text-sm" />
 	</div>
 	<h3 class="username text-amber-400 text-xl hover:text-zinc-900">{user.name}</h3>
-	<button id="follow_user" class="bg-amber-400 text-zinc-900 rounded-lg w-14" on:click={unfollow}
+	<button id="follow_user" class="bg-amber-400 text-zinc-900 rounded-lg w-20" on:click={unfollow}
 		><b>unfollow</b></button
 	>
 </div>

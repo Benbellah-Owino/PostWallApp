@@ -1,7 +1,7 @@
 <script>
-	import User from '$lib/user.svelte';
+	import User from '$lib/userComponents/user.svelte';
 	import NavBar from '$lib/navBar.svelte';
-	import CreatePostButton from '$lib/createPostButton.svelte';
+	import CreatePostButton from '$lib/postComponents/createPostButton.svelte';
 	import { allUsers } from '../../stores/users';
 	import { onMount } from 'svelte';
 
