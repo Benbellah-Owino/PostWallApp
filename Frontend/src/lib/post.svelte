@@ -136,7 +136,7 @@
 
 	//When the post is clicked
 	function openPost() {
-		window.open(`/postPage?post_id=${postObj._id}`);
+		window.open(`/postPage?post_id=${postObj._id}`, '_self');
 	}
 </script>
 

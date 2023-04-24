@@ -76,7 +76,7 @@
 		} catch (error) {
 			console.error(error);
 		}
-		window.open('/');
+		window.open('/posts', '_self');
 	}
 
 	function selectFile() {

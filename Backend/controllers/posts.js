@@ -64,11 +64,11 @@ const comment = async (req, res) => {
             isReply
         }
 
-        const createdPost = await Post.create(commentObject);
+        const newReply = await Post.create(commentObject);
 
         await Post.findOneAndUpdate({ _id: replyTo }, { $inc: { noReplies: 1 } });
 
-        res.status(201).json({ msg: "Comment sent succesfully", status: "pass", postId: createdPost._id })
+        res.status(201).json({ msg: "Comment sent succesfully", status: "pass", newReply })
     } catch (error) {
         console.log(`controllers > post.js > comment > 72: \n ${error}`);
         res.status(500).json({ msg: "Reply could not be created", status: "fail" })

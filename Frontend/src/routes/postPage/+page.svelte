@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
-	import CreateReply from '../../lib/createReply.svelte';
+	import CreateReply from '../../lib/postComponents/createReply.svelte';
 	import Reply from '../../lib/postComponents/reply.svelte';
 
 	import { replies } from '../../stores/posts';

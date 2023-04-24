@@ -1,6 +1,7 @@
 <script>
 	import { identity } from 'svelte/internal';
 	import { onMount } from 'svelte';
+	import { replies } from '../../stores/posts';
 	export let payload;
 
 	let files = [];
@@ -64,8 +65,12 @@
 					//alert('Posted');
 					// window.open('/posts');
 					console.log(data.msg);
-					post_id = data.postId;
+					post_id = data.newReply._id;
+
 					console.log(post_id);
+					replies.update((reps) => {
+						return (reps = [...reps, data.newReply]);
+					});
 				});
 
 			if (files[0]) {

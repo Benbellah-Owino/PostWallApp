@@ -1,4 +1,5 @@
 <script>
+	import { allUsers } from '../../stores/users';
 	export let user;
 	async function follow() {
 		let body = {
@@ -17,7 +18,9 @@
 			})
 				.then((response) => response.json())
 				.then((data) => {
-					console.log(data.msg);
+					allUsers.update((users) => {
+						return (users = users.filter((use) => use._id !== user._id));
+					});
 					alert(data.msg);
 				});
 		} catch (error) {
