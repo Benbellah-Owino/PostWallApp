@@ -1,9 +1,9 @@
 <script>
-	import CreateReply from '../../lib/createReply.svelte';
+	import Options from '$lib/postComponents/postOptions.svelte';
 </script>
 
 <main>
-	<CreateReply />
+	<Options />
 </main>
 
 <style>

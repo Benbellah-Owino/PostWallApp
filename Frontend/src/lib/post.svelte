@@ -1,17 +1,19 @@
 <script>
 	import { onMount } from 'svelte';
+	import { postOptionsObj } from '../stores/myMenuStore';
+	import PostOptions from './postComponents/postOptions.svelte';
 	export let post;
+
 	let postObj = post;
 	let user = { name: '' };
 	$: name = user.name;
 
 	let frame;
-
 	let image;
 
 	let isImage = false;
-
 	let isLiked;
+	let isMenu = false;
 
 	let lc = postObj.noLikes;
 
@@ -138,6 +140,8 @@
 	function openPost() {
 		window.open(`/postPage?post_id=${postObj._id}`, '_self');
 	}
+
+	function openOptions(e) {}
 </script>
 
 <svelte:head
@@ -145,10 +149,35 @@
 		src="https://kit.fontawesome.com/42b8efcb5a.js"
 		crossorigin="anonymous"></script></svelte:head
 >
+<!-- on:click|stopPropagation={(e) => {
+			$postOptionsObj.poOn = !$postOptionsObj.poOn;
+
+			const positionObj = {
+				x: e.clientX,
+				y: e.clientY
+			};
+
+			$postOptionsObj.coordinates = positionObj;
+			$postOptionsObj.id = postObj._id;
+		}} -->
+
 <div
 	class="post flex flex-col  h-fit w-screen relative  bg-zinc-900 border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600 "
 	on:click={openPost}
 >
+	<button
+		class="settings flex justify-center items-center  h-8 w-8 absolute right-3 top-2 rounded-full text-center text-ellipsis  hover:bg-amber-200 hover:bg-opacity-10"
+		on:click|stopPropagation={() => {
+			isMenu = !isMenu;
+		}}
+	>
+		<i class="fa-solid fa-ellipsis" />
+	</button>
+
+	{#if isMenu === true}
+		<PostOptions id={postObj._id} />
+	{/if}
+
 	{#if postObj.isReply == true}
 		<h3 class=" mb-1 font-size">Reply to @{replyUser}</h3>
 	{/if}
