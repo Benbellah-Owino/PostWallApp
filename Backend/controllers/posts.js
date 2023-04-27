@@ -8,6 +8,7 @@ const UserModel = require("../models/UserModel")
 
 const Media = require("../models/mediaModel");
 const { Console } = require('console');
+const e = require('express');
 
 
 
@@ -72,6 +73,28 @@ const comment = async (req, res) => {
     } catch (error) {
         console.log(`controllers > post.js > comment > 72: \n ${error}`);
         res.status(500).json({ msg: "Reply could not be created", status: "fail" })
+    }
+}
+
+//Controller for editing a post
+//Route /editpost
+const editPost = async (req, res) => {
+    try {
+        const { userId } = await isAuth(req);
+
+        const post = req.body;
+
+        if (userId !== post.userid) {
+            res.status(403).json({ msg: "You are not authorized for this operation", status: "fail" })
+        }
+        else if (userId === post.userid) {
+            let editedpost = await Post.findByIdAndUpdate({ _id: post.postid }, { message: post.message })
+
+            res.status(201).json({ msg: "post edited succesfylly", status: "pass", editedpost })
+        }
+    } catch (error) {
+        console.log(`controllers > posts.js > editPost > 96 : \n ${error} \n ***********************`)
+        res.status(500).json({ msg: "Editing post failed", status: "fail" })
     }
 }
 
@@ -356,6 +379,7 @@ module.exports = {
     post,
     comment,
     likePost,
+    editPost,
     deletePost,
     getAllPosts,
     getSingleUserPost,

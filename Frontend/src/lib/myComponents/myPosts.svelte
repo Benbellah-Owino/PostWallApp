@@ -1,5 +1,5 @@
 <script>
-	import Post from '$lib/post.svelte';
+	import MyPost from '$lib/myPost.svelte';
 	import { onMount } from 'svelte';
 	import { myPosts } from '../../stores/posts';
 
@@ -20,7 +20,7 @@
 
 <div class="absolute post_wall bg-amber-900 p-0 flex-col justify-start top-20 left-16 w-screen">
 	{#each $myPosts as post (post._id)}
-		<Post {post} />
+		<MyPost {post} />
 	{/each}
 </div>
 

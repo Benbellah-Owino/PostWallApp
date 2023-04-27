@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import PostOptions from './postComponents/postOptions.svelte';
+	import PostOptions from './postComponents/myPostOptions.svelte';
 	export let post;
 
 	let postObj = post;

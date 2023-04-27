@@ -1,39 +1,67 @@
 <script>
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	let postArea;
 	let files = [];
 	let display;
 	let pic;
 	let video;
-	let userDetails;
+	let postObj;
+	let image;
+
+	let id = $page.url.search.split('=')[1];
 	onMount(async () => {
 		postArea = document.getElementById('post_area');
 		display = document.getElementById('display');
 		pic = document.getElementById('content_pic');
 		video = document.getElementById('content_video');
-		try {
-			await fetch('http://localhost:3000/api/v1/auth/userDetails', {
-				credentials: 'include'
-			})
-				.then((response) => response.json())
-				.then((data) => {
-					let base64Url = data.details.split('.')[1];
-					let decodedToken = JSON.parse(window.atob(base64Url));
-					userDetails = decodedToken;
-				});
-		} catch (error) {}
+
+		console.log(id);
+
+		await fetch(`http://localhost:3000/api/v1/post/getpost?post_id=${id}`, {
+			credentials: 'include',
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				postObj = data.post;
+				console.log(postObj);
+				postArea.value = postObj.message;
+			});
+
+		await fetch(`http://localhost:3000/api/v1/post/getmedia?post_id=${id}`, {
+			credentials: 'include',
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json,image/jpeg,image/png'
+			}
+		})
+			.then((response) => response.blob())
+			.then((data) => {
+				if (data.type == 'application/json') {
+					image = 'none';
+				} else {
+					image = URL.createObjectURL(data);
+					display.style.backgroundImage = `url(${image})`;
+					pic.src = image;
+				}
+			});
 	});
 
 	async function post() {
-		let post_id;
 		const body = {
-			message: postArea.value
+			postid: postObj._id,
+			message: postArea.value,
+			userid: postObj.postedBy
 		};
 		console.log(body);
 
 		try {
-			await fetch(`http://localhost:3000/api/v1/post/post`, {
+			await fetch(`http://localhost:3000/api/v1/post/editpost`, {
 				method: 'POST',
 				redirect: 'follow',
 				credentials: 'include',
@@ -44,39 +72,35 @@
 			})
 				.then((response) => response.json())
 				.then((data) => {
-					//alert('Posted');
-					// window.open('/posts');
-					console.log(data.msg);
-					post_id = data.postId;
-					console.log(post_id);
-				});
-
-			if (files[0]) {
-				console.log(files[0]);
-
-				const formData = new FormData();
-				formData.append('media', files[0]);
-
-				await fetch(`http://localhost:3000/api/v1/addMedia?id=${post_id}`, {
-					method: 'POST',
-					redirect: 'follow',
-					credentials: 'include',
-					body: formData
+					console.log(data);
 				})
-					.then((response) => response.json())
-					.then((data) => {
-						//alert('Posted');
-						// window.open('/posts');
-						console.log(data.msg);
-						post_id = data.postId;
-					});
-			} else {
-				console.log('no');
-			}
+				.catch((error) => {
+					console.log(error);
+				});
+			// 	if (files[0]) {
+			// 		console.log(files[0]);
+			// 		const formData = new FormData();
+			// 		formData.append('media', files[0]);
+			// 		await fetch(`http://localhost:3000/api/v1/addMedia?id=${post_id}`, {
+			// 			method: 'POST',
+			// 			redirect: 'follow',
+			// 			credentials: 'include',
+			// 			body: formData
+			// 		})
+			// 			.then((response) => response.json())
+			// 			.then((data) => {
+			// 				console.log(data.msg);
+			// 				post_id = data.postId;
+			// 			});
+			// 	} else {
+			// 		console.log('no');
+			// 	}
+			// } catch (error) {
+			// 	console.error(error);
 		} catch (error) {
-			console.error(error);
+			console.log(error);
 		}
-		window.open('/posts', '_self');
+		//window.open('/posts', '_self');
 	}
 
 	function selectFile() {
@@ -87,7 +111,6 @@
 			const file = input.files[0];
 			const reader = new FileReader();
 			reader.addEventListener('load', () => {
-				//console.log(reader.result);
 				display.style.backgroundImage = `url(${reader.result})`;
 				pic.src = reader.result;
 
@@ -109,7 +132,7 @@
 >
 
 <main class="main w-full p-1 flex flex-col justify-center items-center">
-	<label for="post_area" class="text-amber-400 font" id="text_label">Write your post</label>
+	<label for="post_area" class="text-amber-400 font" id="text_label">Edit your post</label>
 	<textarea
 		name="post_area"
 		id="post_area"

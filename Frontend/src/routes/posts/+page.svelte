@@ -2,10 +2,8 @@
 	import Post from '$lib/post.svelte';
 	import NavBar from '$lib/navBar.svelte';
 	import CreatePostButton from '$lib/postComponents/createPostButton.svelte';
-	import PostOptions from '$lib/postComponents/postOptions.svelte';
 	import { onMount } from 'svelte';
 	import { posts } from '../../stores/posts.js';
-	import { postOptionsObj } from '../../stores/myMenuStore.js';
 
 	onMount(async () => {
 		await fetch('http://localhost:3000/api/v1/post/getposts', {
