@@ -1,5 +1,7 @@
 <script>
 	import { allUsers } from '../../stores/users';
+	import { message } from '../../stores/msgStore';
+	import { fade } from 'svelte/transition';
 	export let user;
 	async function follow() {
 		let body = {
@@ -21,7 +23,7 @@
 					allUsers.update((users) => {
 						return (users = users.filter((use) => use._id !== user._id));
 					});
-					alert(data.msg);
+					$message = `You've followed ${user.name}`;
 				});
 		} catch (error) {
 			console.error(error.msg);
@@ -34,7 +36,10 @@
 		src="https://kit.fontawesome.com/42b8efcb5a.js"
 		crossorigin="anonymous"></script></svelte:head
 >
-<div class="user_tile bg-zinc-900 w-11/12 h-16 flex flex-row justify-around items-center relative">
+<div
+	out:fade={{ duration: 500 }}
+	class="user_tile bg-zinc-900 w-11/12 h-16 flex flex-row justify-around items-center relative"
+>
 	<div
 		class="profile_pic h-12 w-12 border-2 flex justify-center items-center border-amber-400 text-amber-400 absolute left-2 mb-0 rounded-full"
 	>

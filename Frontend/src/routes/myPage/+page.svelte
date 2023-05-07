@@ -6,9 +6,14 @@
 	import ImFollowed from '$lib/myComponents/imFollowing.svelte';
 	import { myMenu } from '../../stores/myMenuStore';
 	import CreatePostButton from '$lib/postComponents/createPostButton.svelte';
+	import { message } from '../../stores/msgStore';
+	import SuccessMsg from '$lib/smallcomponents/successMsg.svelte';
+	import { onDestroy } from 'svelte';
 
 	// customElements.define('MainNav', MainNav);
 	let menuActive = false;
+
+	let alert = false;
 
 	function toggleMenu() {
 		menuActive = !menuActive;
@@ -17,6 +22,13 @@
 	function dock() {
 		menuActive = !menuActive;
 	}
+
+	const unSubscribe = message.subscribe(() => {
+		alert = true;
+		setTimeout(() => (alert = !alert), 3000);
+	});
+
+	onDestroy(unSubscribe);
 </script>
 
 <svelte:head
@@ -45,6 +57,10 @@
 		<MyFollowers class=" w-10/12 left-11 top-20" />
 	{:else if $myMenu === 3}
 		<ImFollowed class=" w-10/12 left-11 top-20" />
+	{/if}
+
+	{#if alert === true}
+		<SuccessMsg msg={$message} />
 	{/if}
 </main>
 

@@ -1,5 +1,8 @@
 <script>
+	import { message } from '../../stores/msgStore';
+	import { imFollowing } from '../../stores/users';
 	export let user;
+
 	async function unfollow() {
 		let body = {
 			id: user._id
@@ -17,8 +20,10 @@
 			})
 				.then((response) => response.json())
 				.then((data) => {
-					console.log(data.msg);
-					alert(data.msg);
+					imFollowing.update((users) => {
+						return (users = users.filter((use) => use._id !== user._id));
+					});
+					$message = `You've unfollowed ${user.name}`;
 				});
 		} catch (error) {
 			console.error(error.msg);

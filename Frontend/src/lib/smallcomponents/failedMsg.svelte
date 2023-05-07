@@ -6,7 +6,7 @@
 <div
 	in:fly={{ y: 30 }}
 	out:fade={{ duration: 1000 }}
-	class="main flex justify-center items-center absolute bottom-5 h-8  p-1 border-2 border-amber-400 rounded-lg shadow-sm shadow-amber-400 bg-amber-400 bg-opacity-10 text-sm"
+	class="main flex justify-center items-center absolute bottom-5 h-14  p-3 border-2 border-zinc-900 rounded-lg shadow-lg shadow-amber-400 bg-amber-400 text-black text-sm font-bold"
 >
 	<h1>{msg}</h1>
 </div>

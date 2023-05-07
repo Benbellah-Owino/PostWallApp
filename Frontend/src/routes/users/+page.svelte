@@ -3,7 +3,12 @@
 	import NavBar from '$lib/navBar.svelte';
 	import CreatePostButton from '$lib/postComponents/createPostButton.svelte';
 	import { allUsers } from '../../stores/users';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
+
+	import { message } from '../../stores/msgStore';
+	import SuccessAlert from '$lib/smallComponents/successMsg.svelte';
+
+	let alert = false;
 
 	onMount(async () => {
 		await fetch('http://localhost:3000/api/v1/auth/getusers', {
@@ -18,6 +23,13 @@
 				allUsers.set(data.final);
 			});
 	});
+
+	const unSubscribe = message.subscribe(() => {
+		alert = true;
+		setTimeout(() => (alert = !alert), 3000);
+	});
+
+	onDestroy(unSubscribe);
 </script>
 
 <main class="w-screen h-screen p-0">
@@ -31,6 +43,10 @@
 			<User {user} />
 		{/each}
 	</div>
+
+	{#if alert === true}
+		<SuccessAlert msg={$message} />
+	{/if}
 </main>
 
 <style>
