@@ -171,27 +171,36 @@ const checkForLike = async (req, res) => {
 
 
 //Controller for deleting a post
-//
+//deletpost
 const deletePost = async (req, res) => {
-    const userId = isAuth(req);
 
-    const { postId } = req.body;
-    const post = await Post.findById(postId);
-    if (!post) {
-        console.log("Error! post doesn't exist")
-    }
-    else if (post) {
-        const isAuthor = post.postedBy
-        if (userId == isAuthor) {
-            await Post.findByIdAndDelete(postId)
+    try {
+        const { userId } = await isAuth(req);
 
-            res.json({ msg: "Post has been succesfuly deleted!" })
+        const { post_id, user_id } = req.query;
+
+        if (userId !== user_id) {
+            res.json(403).json({ msg: "You're not authorized for this operation" })
         }
-        else if (!userId != isAuthor) {
-            console.log("Error! This operation is not authorized")
+
+        else if (userId === user_id) {
+            const deletedPost = await Post.findByIdAndDelete(post_id)
+
+            if (deletedPost) {
+                res.status(204);
+            }
         }
+    } catch (error) {
+        console.log(`contollers> posts.js > deletePost> 194: \n${error} \n *******************************\n`);
+        res.status(500).json({ msg: "Error deleting message", status: "fail" })
     }
 }
+
+
+
+
+
+
 
 //Getting the posts
 const getAllPosts = async (req, res) => {

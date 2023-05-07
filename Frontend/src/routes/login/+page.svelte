@@ -27,7 +27,7 @@
 				.then((response) => response.json())
 				.then((data) => {
 					console.log(data.msg);
-					window.open('/posts');
+					window.open('/posts', '_self');
 				});
 		} catch (error) {
 			console.error(error.msg);

@@ -19,6 +19,8 @@
 	let replyTo;
 	let replyUser;
 
+	let idObj = {};
+
 	$: likeCount = lc;
 	onMount(async () => {
 		frame = document.getElementById('frame');
@@ -110,6 +112,8 @@
 					}
 				});
 		}
+
+		idObj = { postId: postObj._id, userId: postObj.postedBy };
 	});
 
 	async function likePost() {
@@ -139,8 +143,6 @@
 	function openPost() {
 		window.open(`/postPage?post_id=${postObj._id}`, '_self');
 	}
-
-	function openOptions(e) {}
 </script>
 
 <svelte:head
@@ -148,24 +150,13 @@
 		src="https://kit.fontawesome.com/42b8efcb5a.js"
 		crossorigin="anonymous"></script></svelte:head
 >
-<!-- on:click|stopPropagation={(e) => {
-			$postOptionsObj.poOn = !$postOptionsObj.poOn;
-
-			const positionObj = {
-				x: e.clientX,
-				y: e.clientY
-			};
-
-			$postOptionsObj.coordinates = positionObj;
-			$postOptionsObj.id = postObj._id;
-		}} -->
 
 <div
-	class="post flex flex-col  h-fit w-screen relative  bg-zinc-900 border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600 "
+	class="post flex flex-col  h-fit w-9/12 relative bg-zinc-900 border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600 "
 	on:click={openPost}
 >
 	<button
-		class="settings flex justify-center items-center  h-8 w-8 absolute right-3 top-2 rounded-full text-center text-ellipsis  hover:bg-amber-200 hover:bg-opacity-10"
+		class="settings flex justify-center items-center  h-8 w-8 absolute right-5 top-3 rounded-full text-center text-ellipsis  hover:bg-amber-200 hover:bg-opacity-10"
 		on:click|stopPropagation={() => {
 			isMenu = !isMenu;
 		}}
@@ -174,7 +165,7 @@
 	</button>
 
 	{#if isMenu === true}
-		<PostOptions id={postObj._id} />
+		<PostOptions ids={idObj} />
 	{/if}
 
 	{#if postObj.isReply == true}

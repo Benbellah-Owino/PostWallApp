@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import SuccessMsg from '$lib/smallcomponents/successMsg.svelte';
 
 	let postArea;
 	let files = [];
@@ -7,6 +8,10 @@
 	let pic;
 	let video;
 	let userDetails;
+
+	let successMsg = false;
+
+	let message = 'No message';
 	onMount(async () => {
 		postArea = document.getElementById('post_area');
 		display = document.getElementById('display');
@@ -46,9 +51,7 @@
 				.then((data) => {
 					//alert('Posted');
 					// window.open('/posts');
-					console.log(data.msg);
-					post_id = data.postId;
-					console.log(post_id);
+					message = data.msg;
 				});
 
 			if (files[0]) {
@@ -67,8 +70,6 @@
 					.then((data) => {
 						//alert('Posted');
 						// window.open('/posts');
-						console.log(data.msg);
-						post_id = data.postId;
 					});
 			} else {
 				console.log('no');
@@ -76,7 +77,12 @@
 		} catch (error) {
 			console.error(error);
 		}
-		window.open('/posts', '_self');
+
+		successMsg = true;
+		setTimeout(() => {
+			successMsg = !successMsg;
+			window.open('/posts', '_self');
+		}, 3000);
 	}
 
 	function selectFile() {
@@ -149,6 +155,10 @@
 		<img src="" class="w-fit h-fit" alt="my post" id="content_pic" />
 		<!-- <video src="" width="640" height="240" controls id="content_video" /> -->
 	</div>
+
+	{#if successMsg === true}
+		<SuccessMsg msg={message} />
+	{/if}
 </main>
 
 <style>

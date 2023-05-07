@@ -136,7 +136,7 @@ const getUser = async (req, res) => {
 const logout = async (req, res) => {
     try {
 
-        const userId = userCreds._id
+        const { userId } = await isAuth(req);
         console.log(userId)
 
         if (!userId) {

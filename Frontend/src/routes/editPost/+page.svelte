@@ -100,7 +100,7 @@
 		} catch (error) {
 			console.log(error);
 		}
-		//window.open('/posts', '_self');
+		window.open('/posts', '_self');
 	}
 
 	function selectFile() {

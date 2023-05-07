@@ -139,8 +139,6 @@
 	function openPost() {
 		window.open(`/postPage?post_id=${postObj._id}`, '_self');
 	}
-
-	function openOptions(e) {}
 </script>
 
 <svelte:head
@@ -148,17 +146,6 @@
 		src="https://kit.fontawesome.com/42b8efcb5a.js"
 		crossorigin="anonymous"></script></svelte:head
 >
-<!-- on:click|stopPropagation={(e) => {
-			$postOptionsObj.poOn = !$postOptionsObj.poOn;
-
-			const positionObj = {
-				x: e.clientX,
-				y: e.clientY
-			};
-
-			$postOptionsObj.coordinates = positionObj;
-			$postOptionsObj.id = postObj._id;
-		}} -->
 
 <div
 	class="post flex flex-col  h-fit w-screen relative  bg-zinc-900 border-b-2 pt-2 hover:cursor-pointer hover:bg-zinc-600 "

@@ -1,9 +1,9 @@
 <script>
-	import Options from '$lib/postComponents/postOptions.svelte';
+	import SuccessMsg from '$lib/smallcomponents/successMsg.svelte';
 </script>
 
 <main>
-	<Options />
+	<SuccessMsg />
 </main>
 
 <style>
