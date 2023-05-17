@@ -20,6 +20,9 @@
 	let replyUser;
 
 	$: likeCount = lc;
+
+	let elapsedTime;
+	let timeString = '';
 	onMount(async () => {
 		frame = document.getElementById('frame');
 
@@ -110,6 +113,30 @@
 					}
 				});
 		}
+
+		let currentTime = new Date();
+		let createdAt = postObj.createdAt;
+		let ciso = new Date(createdAt);
+
+		elapsedTime = currentTime - ciso;
+
+		const millisecondsInMinute = 1000 * 60;
+		const millisecondsInHour = millisecondsInMinute * 60;
+		const millisecondsInDay = millisecondsInHour * 24;
+
+		const days = Math.floor(elapsedTime / millisecondsInDay);
+		const hours = Math.floor((elapsedTime % millisecondsInDay) / millisecondsInHour);
+		const minutes = Math.floor((elapsedTime % millisecondsInHour) / millisecondsInMinute);
+
+		if (days != 0) {
+			timeString = `${days} days`;
+		} else if (days == 0 && hours != 0) {
+			timeString = `${hours} hours`;
+		} else if (days == 0 && hours == 0 && minutes != 0) {
+			timeString = `${minutes} minutes`;
+		} else if (days == 0 && hours == 0 && minutes == 0) {
+			timeString = 'Now';
+		}
 	});
 
 	async function likePost() {
@@ -171,6 +198,8 @@
 		<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mr-4" />
 		<h3 class="username text-amber-400">{name}</h3>
 	</div>
+
+	<h3 class="time absolute top-1 right-16">{timeString}</h3>
 
 	<div class="payload h-fit max-h-40 text-amber-400 text-sm ml-2 ">
 		{postObj.message}

@@ -209,7 +209,7 @@ const getAllPosts = async (req, res) => {
 
         const blocked = await UserModel.findById({ userId }).blockedUsers  //Get all other users who have been blocked by the user
 
-        const posts = await Post.find().limit(20) //Limit the posts to 20
+        const posts = await Post.find().limit(40).sort({ createdAt: -1 }) //Limit the posts to 20
 
 
 
