@@ -6,12 +6,16 @@
 	let nameField;
 	let emailField;
 	let registerBtn;
+	let dp;
+
+	let profile_pic;
 	onMount(() => {
 		passwordField = document.getElementById('password_field');
 		confirmPasswordField = document.getElementById('confirm_password_field');
 		registerBtn = document.getElementById('register_button');
 		nameField = document.getElementById('name_field');
 		emailField = document.getElementById('email_field');
+		dp = document.getElementById('dp');
 	});
 
 	function showPassword() {
@@ -61,6 +65,28 @@
 				});
 		} catch (error) {}
 	}
+
+	//Select DP
+
+	function selectFile() {
+		let input = document.createElement('input');
+		input.type = 'file';
+		input.accept = 'image/*, video/*';
+		input.onchange = () => {
+			const file = input.files[0];
+			const reader = new FileReader();
+			reader.addEventListener('load', () => {
+				dp.style.backgroundImage = `url(${reader.result})`;
+
+				profile_pic = file;
+			});
+			if (file) {
+				console.log(profile_pic);
+				reader.readAsDataURL(file);
+			}
+		};
+		input.click();
+	}
 </script>
 
 <main class="h-full w-full col justify-start items-center">
@@ -69,14 +95,14 @@
 			class="flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6"
 		>
 			<div
-				class="grow-0 shrink-1 md:shrink-0 basis-auto xl:w-6/12 lg:w-6/12 md:w-9/12 mb-12 md:mb-0"
+				class="grow-0 shrink-1 md:shrink-0 basis-auto xl:w-6/12 lg:w-6/12 md:w-9/12 mb-16 md:mb-0"
 			>
 				<img src="src/images/PostWallLogo.png" class="image w-96 h-96" alt="The postwall logo" />
 			</div>
 			<div class="xl:ml-20 xl:w-5/12 lg:w-5/12 md:w-8/12 mb-12 md:mb-0">
 				<form>
 					<div class="flex flex-row items-center justify-center lg:justify-start">
-						<p class="text-lg mb-0 mr-4 text-amber-400">Register with</p>
+						<p class="text-lg mb-0 mr-4 text-amber-400 ">Register with</p>
 						<button
 							type="button"
 							data-mdb-ripple="true"
@@ -132,7 +158,16 @@
 						<p class="text-center font-semibold mx-4 mb-0">Or</p>
 					</div>
 
-					<!-- Email input -->
+					<!-- Name input -->
+
+					<div class="dp flex flex-col justify-center items-center my-10">
+						<div id="dp" class="dphoto w-56 h-56 border border-amber rounded-full mb-2" />
+						<button
+							on:click|preventDefault={selectFile}
+							class="text-center w-fit h-10 p-2 border border-amber-400 rounded-lg hover:bg-amber-400 hover:text-black hover:font-semibold"
+							>select profile picture</button
+						>
+					</div>
 					<div class="mb-6">
 						<input
 							type="text"
@@ -152,10 +187,10 @@
 					</div>
 
 					<!-- Password input -->
-					<div class="mb-6 flex justify-around items-center">
+					<div class="mb-6 flex justify-around items-center ">
 						<input
 							type="password"
-							class="form-control block w-11/12 px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-2 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+							class="form-control block w-11/12 px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
 							id="password_field"
 							placeholder="Password"
 						/>
@@ -169,10 +204,10 @@
 							>Show</label
 						>
 					</div>
-					<div class="mb-6 flex justify-around items-center ">
+					<div class="mb-6 flex justify-around items-center">
 						<input
 							type="password"
-							class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+							class="form-control block w-11/12 px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
 							id="confirm_password_field"
 							placeholder="confirm_Password"
 						/>
@@ -180,7 +215,7 @@
 						<input
 							type="checkbox"
 							class="form-check-input appearance-none h-4 w-4 border ml-2 border-gray-300 rounded-sm bg-white checked:bg-amber-400 checked:border-blue-600 focus:outline-none transition duration-200  align-top bg-no-repeat bg-center bg-contain float-left cursor-pointer"
-							id="show_password_check"
+							id="showconfirm_password_check"
 							on:click={showConfirmPassword}
 						/>
 						<label class="form-check-label inline-block text-amber-400" for="show_password_check"
@@ -205,4 +240,9 @@
 </main>
 
 <style>
+	#dp {
+		background-image: none;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
 </style>

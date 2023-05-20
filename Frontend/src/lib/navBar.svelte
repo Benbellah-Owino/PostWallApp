@@ -65,8 +65,8 @@
 	</div>
 	<button
 		id="logout"
-		class="p-1 bg-black text-amber-400 border-2 border-amber-400 rounded-md hover:bg-amber-400 hover:text-zinc-900 hover:font-semibold"
-		on:click={logout}>Log</button
+		class="p-1 w-16 h-13 bg-black text-amber-400 border-2 border-amber-400 rounded-md hover:bg-amber-400 hover:text-zinc-900 hover:font-semibold"
+		on:click={logout}><i class="fa-solid fa-right-from-bracket" /></button
 	>
 </div>
 

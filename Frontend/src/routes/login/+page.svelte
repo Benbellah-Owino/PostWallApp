@@ -33,6 +33,14 @@
 			console.error(error.msg);
 		}
 	}
+
+	function showPassword() {
+		if (passWordField.type === 'password') {
+			passWordField.type = 'text';
+		} else {
+			passWordField.type = 'password';
+		}
+	}
 </script>
 
 <main class="h-full w-full col justify-start items-center">
@@ -105,7 +113,7 @@
 					</div>
 
 					<!-- Email input -->
-					<div class="mb-6">
+					<div class="mb-6 w-9/12">
 						<input
 							type="text"
 							class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
@@ -115,13 +123,21 @@
 					</div>
 
 					<!-- Password input -->
-					<div class="mb-6">
+
+					<div class="mb-6 password w-9/12 flex flex-row justify-center items-center">
 						<input
 							type="password"
 							class="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
 							id="password_field"
 							placeholder="Password"
 						/>
+
+						<input
+							type="checkbox"
+							class="form-check-input appearance-none h-4 w-4 border ml-2 border-gray-300 rounded-sm bg-white checked:bg-amber-400 checked:border-blue-600 focus:outline-none transition duration-200  align-top bg-no-repeat bg-center bg-contain float-left cursor-pointer"
+							id="show_password"
+							on:click={showPassword}
+						/> Show
 					</div>
 
 					<div class="flex justify-between items-center mb-6">
