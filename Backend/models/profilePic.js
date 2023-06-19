@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const MediaSchema = new mongoose.Schema({
+const ProfilePicSchema = new mongoose.Schema({
 
-    userBy: {
+    user: {
         type: mongoose.Types.ObjectId,
         ref: "User"
     },
@@ -11,4 +11,4 @@ const MediaSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model("Media", MediaSchema)
+module.exports = mongoose.model("ProfilePic", ProfilePicSchema)

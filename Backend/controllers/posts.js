@@ -42,7 +42,7 @@ const post = async (req, res) => {
 
         const post = await Post.create(postObject) //Save the post in database
 
-        res.status(201).json({ msg: "Post created succefully", postId: post._id })
+        res.status(201).json({ postId: post._id })
     } catch (error) {
         console.log(error)
         res.status(400).json({ msg: "Post not created" })
@@ -137,17 +137,18 @@ const likePost = async (req, res) => {
 //Check if you've liked the post
 //Route:  /checkLike
 const checkForLike = async (req, res) => {
-    const { userId } = await isAuth(req); //Get user Id
-
-    const { post_id } = req.query //Get post Id
-
-    if (!post_id) {
-        console.log("controllers > post.js > checkForLike > 111: No post ID available")
-        res.status(400).json({ status: "fail" })
-        return
-    }
-
     try {
+        const { userId } = await isAuth(req); //Get user Id
+
+        const { post_id } = req.query //Get post Id
+
+        if (!post_id) {
+            console.log("controllers > post.js > checkForLike > 111: No post ID available")
+            res.status(400).json({ status: "fail" })
+            return
+        }
+
+
         const object = await Post.findById({ _id: post_id }, { likes: 1 })//Get user id's of those who've liked the post
         const arr = object.likes //Extract the likes array
         const isItLiked = arr.includes(userId) //Chekc if user Id is in likes array
@@ -204,38 +205,45 @@ const deletePost = async (req, res) => {
 
 //Getting the posts
 const getAllPosts = async (req, res) => {
+    let userId
     try {
-        const { userId } = await isAuth(req);
-
-        const blocked = await UserModel.findById({ userId }).blockedUsers  //Get all other users who have been blocked by the user
+        try {
+            const { userId } = await isAuth(req);
+            userId = userId
+        } catch (error) {
+            userId = "none"
+        }
 
         const posts = await Post.find().limit(40).sort({ createdAt: -1 }) //Limit the posts to 20
 
+        if (userId) {
+            const blocked = await UserModel.findById({ userId }).blockedUsers  //Get all other users who have been blocked by the user
 
+            if (posts) {
+                let finalPosts = [];
+                posts.forEach(async (post) => {
+                    let id = post._id
 
+                    let flagged = false
+                    if (blocked) {
+                        blocked.forEach(block => {
+                            if (block == id) {
+                                flagged = true
+                            }
+                        });
+                    }
+                    if (flagged === false) {
+                        finalPosts.push(post)
+                    }
 
-        if (posts) {
-            let finalPosts = [];
-            posts.forEach(async (post) => {
-                let id = post._id
+                });
 
-                let flagged = false
-                if (blocked) {
-                    blocked.forEach(block => {
-                        if (block == id) {
-                            flagged = true
-                        }
-                    });
-                }
-                if (flagged === false) {
-                    finalPosts.push(post)
-                }
+                res.status(200).json({ finalPosts })
+            }
 
-            });
-
+        } else if (userId === "none") {
             res.status(200).json({ finalPosts })
         }
-
 
     } catch (error) {
         res.status(404).json({ msg: "An error occured" })

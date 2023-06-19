@@ -52,6 +52,7 @@
 					//alert('Posted');
 					// window.open('/posts');
 					message = data.msg;
+					post_id = data.postId;
 				});
 
 			if (files[0]) {

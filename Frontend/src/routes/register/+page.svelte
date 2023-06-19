@@ -9,6 +9,8 @@
 	let dp;
 
 	let profile_pic;
+
+	let user = {};
 	onMount(() => {
 		passwordField = document.getElementById('password_field');
 		confirmPasswordField = document.getElementById('confirm_password_field');
@@ -45,8 +47,6 @@
 			password: passwordField.value
 		};
 
-		console.log(body);
-
 		try {
 			await fetch(`http://localhost:3000/api/v1/auth/register`, {
 				method: 'POST',
@@ -57,12 +57,38 @@
 				},
 				body: JSON.stringify(body)
 			})
-				.then((response) => response.JSON())
+				.then((response) => response.json())
 				.then((data) => {
-					console.log(data);
-					alert('You have registerd. You will be taken to login to start your journey with us 😀');
-					window.open('/login');
+					(user.username = data.username), (user.id = data.id);
 				});
+		} catch (error) {}
+
+		//See how to send username
+		try {
+			if (profile_pic) {
+				console.log(profile_pic);
+
+				const formData = new FormData();
+				formData.append('media', profile_pic);
+
+				await fetch(
+					`http://localhost:3000/api/v1/auth/newprofilepic?id=${user.id}&username=${user.username}`,
+					{
+						method: 'POST',
+						redirect: 'follow',
+						credentials: 'include',
+						body: formData
+					}
+				)
+					.then((response) => response.json())
+					.then((data) => {
+						//alert('Posted');
+						console.log('sent');
+						// window.open('/posts');
+					});
+			} else {
+				console.log('no');
+			}
 		} catch (error) {}
 	}
 
@@ -86,6 +112,33 @@
 			}
 		};
 		input.click();
+	}
+
+	function send_media() {
+		try {
+			if (profile_pic) {
+				console.log(profile_pic);
+
+				const formData = new FormData();
+				formData.append('media', profile_pic);
+
+				fetch(`http://localhost:3000/api/v1/auth/newprofilepic`, {
+					method: 'POST',
+					redirect: 'follow',
+					credentials: 'include',
+					body: formData
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						//alert('Posted');
+						console.log('sent');
+						console.log(data);
+						// window.open('/posts');
+					});
+			} else {
+				console.log('no');
+			}
+		} catch (error) {}
 	}
 </script>
 
@@ -166,6 +219,11 @@
 							on:click|preventDefault={selectFile}
 							class="text-center w-fit h-10 p-2 border border-amber-400 rounded-lg hover:bg-amber-400 hover:text-black hover:font-semibold"
 							>select profile picture</button
+						>
+						<button
+							on:click|preventDefault={send_media}
+							class="text-center w-fit h-10 p-2 border border-amber-400 rounded-lg hover:bg-amber-400 hover:text-black hover:font-semibold"
+							>send</button
 						>
 					</div>
 					<div class="mb-6">

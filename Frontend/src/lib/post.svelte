@@ -10,6 +10,9 @@
 	let frame;
 	let image;
 
+	let profilePic;
+
+	let isPp = false;
 	let isImage = false;
 	let isLiked;
 	let isMenu = false;
@@ -61,6 +64,24 @@
 					image = URL.createObjectURL(data);
 
 					isImage = true;
+				}
+			});
+
+		await fetch(`http://localhost:3000/api/v1/auth/profilepic?user_id=${postObj.postedBy}`, {
+			credentials: 'include',
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json,image/jpeg,image/png'
+			}
+		})
+			.then((response) => response.blob())
+			.then((data) => {
+				if (data.type == 'application/json') {
+					profilePic = 'none';
+				} else {
+					profilePic = URL.createObjectURL(data);
+
+					isPp = true;
 				}
 			});
 
@@ -188,14 +209,26 @@
 	</button>
 
 	{#if isMenu === true}
-		<PostOptions id={postObj._id} />
+		<PostOptions user={{ postId: postObj._id, postedBy: postObj.postedBy, userName: user.name }} />
 	{/if}
 
 	{#if postObj.isReply == true}
 		<h3 class=" mb-1 font-size">Reply to @{replyUser}</h3>
 	{/if}
 	<div class="user_details flex flex-row justify-start items-center float-left h-fit mb-4 p-1  ">
-		<div class="profile_pic border-2 w-8 h-8 border-amber-400 rounded-full mr-4" />
+		{#if isPp === true}
+			<img
+				class="profile_pic border-2 w-14 h-14 border-amber-400 rounded-full mr-4"
+				src={profilePic}
+				alt="profile picture"
+			/>
+		{:else if isPp === false}
+			<div
+				class="profile_pic border-2 w-14 h-14 border-amber-400 rounded-full mr-4"
+				id="profile_pic"
+			/>
+		{/if}
+
 		<h3 class="username text-amber-400">{name}</h3>
 	</div>
 

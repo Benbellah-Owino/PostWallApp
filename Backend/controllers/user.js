@@ -1,19 +1,34 @@
 const User = require("../models/UserModel")
+const path = require("path")
+const ProfilePic = require("../models/profilePic")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const { signToken, sendToken } = require("../token")
 const isAuth = require("../middleware/isAuth")
 const { unblock } = require("../middleware/automatedFunctions")
 const timestamp = require("../middleware/getTime");
+const multer = require("multer");
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "profile_pictures")
+    },
+    filename: async (req, file, cb) => {
+        const { username } = req.query
+        console.log(file);
+        let name = file.originalname
+        name = name.split(".")[0]
 
-
+        let user = username.split(" ")[0];
+        cb(null, "postwall_profile_pic" + Date.now() + user + path.extname(file.originalname))
+    }
+})
 
 let userCreds = {};
 
 const createUser = (async (req, res) => {
     const { email, password, name } = req.body
 
-
+    res.clearCookie("authtoken", { domain: "localhost", path: "/" })
     const userOBJ = {
         name: name,
         email: email,
@@ -30,18 +45,46 @@ const createUser = (async (req, res) => {
     try {
         userOBJ.refreshToken = "";
         const newUser = await User.create(userOBJ)
-        const token = signToken(newUser._id, newUser.name)
-        sendToken(res, token);
+        // const token = signToken(newUser._id, newUser.name)
+        // sendToken(res, token);
+        //console.log(token)
         var date = new Date();
         var current_date = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-        console.log(`User object ${newUser} created at ${current_date}`)
-        sendRefreshToken(res, refreshToken)
-        sendAccessToken(req, res, accessToken)
+        console.log(`User object ${newUser} created at ${current_date}`);
+        res.status(201).json({ username: newUser.name, id: newUser._id })
+        // sendRefreshToken(res, refreshToken)
+        // sendToken(req, res, accessToken)
     } catch (error) {
         console.log(error)
         res.status(400).send("Error")
     }
 })
+
+//Set use profile pic
+const setProfilePic = async (req, res) => {
+    try {
+        const filename = req.file.filename;
+        console.log('\n\nFile saved as:', filename);
+        console.log(req.file)
+
+        let { id } = req.query
+
+        console.log(id)
+
+        let media = await ProfilePic.create({
+            fileName: filename,
+            user: id
+        })
+
+        console.log(media)
+
+        res.status(201).json({ msg: "Profile pic Added Succesfully" })
+    } catch (error) {
+        console.log(`controllers > user.js> setProfilePic > 80 : \n ${error}`)
+        res.status(500)
+    }
+}
+
 
 const loginUser = (async (req, res) => {
     res.clearCookie("authtoken")
@@ -102,8 +145,8 @@ const refresh = (req, res) => {
                 }
                 else {
 
-                    const accessToken = createAccessToken(userCreds._id, userCreds.name, userCreds.admin, userCreds.blocked)
-                    return sendAccessToken(req, res, accessToken)
+                    const accessToken = signToken(userCreds._id, userCreds.name, userCreds.admin, userCreds.blocked)
+                    return sendToken(req, accessToken)
                 }
             })
     } else {
@@ -130,6 +173,25 @@ const getUser = async (req, res) => {
     } catch (error) {
         //console.log(error)
         res.status(400).json({ msg: "Encounterd an error", status: "fail" })
+    }
+}
+
+const profilePic = async (req, res) => {
+    const { user_id } = req.query;
+
+    try {
+        const profilepic = await ProfilePic.find({ user: user_id });
+
+        if (profilepic[0]) {
+            console.log(profilepic[0])
+            let pp = path.join(__dirname, '../profile_pic', `${profilepic[0].fileName}`)
+            res.sendFile(pp)
+        } else {
+            res.json({ media: "none", status: "success" })
+        }
+    } catch (error) {
+        console.log("controllers> user.js > profile> 190> " + error)
+        res.status(500).json({ media: "none", status: "failed" })
     }
 }
 
@@ -413,5 +475,7 @@ module.exports = {
     getUserDetails,
     getUser,
     getFollowing,
-    unfollowUser
+    unfollowUser,
+    setProfilePic,
+    profilePic
 }

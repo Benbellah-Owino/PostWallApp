@@ -96,6 +96,30 @@ app.post("/api/v1/addMedia", upload.single("media"), async (req, res) => {
 
     res.status(200).json({ msg: "Media Added Succesfully" })
 })
+
+// app.post("/newprofilepic", upload.single("media"), async (req, res) => {
+//     try {
+//         console.log("sent")
+//         const filename = req.file.filename;
+//         console.log('File saved as:', filename);
+
+//         let { userId } = await isAuth(req)
+
+//         let media = await ProfilePic.create({
+//             fileName: filename,
+//             postedBy: userId
+//         })
+
+//         console.log(media)
+
+//         res.status(201).json({ msg: "Profile pic Added Succesfully" })
+//     } catch (error) {
+//         console.log(`controllers > user.js> setProfilePic > 80 : \n ${error}`)
+//         res.status(500)
+//     }
+// })
+
+
 app.get("/getCookie", (req, res) => {
     console.log(req.cookies)
     res.send(req.cookies)
