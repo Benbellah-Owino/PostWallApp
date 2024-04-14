@@ -11,8 +11,8 @@ I'll make the code more readable as time goes on.
 
 ## Running backend
 1. Open a terminal in the backend folder (or navigate to it. Just make sure you are in backend folder
-2. Run ** npm start ** to start the server
+2. Run **npm start** to start the server
 
 ## Running frontend
 1. Open a terminal in the frontend folder (or navigate to it. Just make sure you are in frontend folder
-2. Run  ** npm run dev ** to start the client server
+2. Run  **npm run dev** to start the client server
